@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<link href="https://fonts.googleapis.com/css?family=ABeeZee&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/main_index.css') }}">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<head>
+    <title>Document</title></head>
+<body>
+<div class="v1_17">
+    <div class="v1_2"></div>
+    <div class="v1_3"></div>
+    <span class="v1_4">Muza</span>
+    <span class="v1_5">Your personal AI assisted song notebook</span>
+    <span class="v1_7">
+        <form id="add_song_form" method="post">
+            <button href="{{ url_for('add_new_song') }}" type="submit" class="btn btn-primary btn-lg">Add New Song</button>
+        </form>
+    </span>
+    <span class="v1_6">My Songs:</span>
+    <span
+        class="v1_18">Welcome to your song notebook!
+
+You can write new songs here, save them, and load old songs
+If you get stuck or running out of muse, ask your personal AI assistant
+to help you with one of three tasks:
+
+Write for you the next line(s) in the song
+Complete a partially written line
+Change an existing line that you don’t like
+
+To begin, click “Add New Song” button</span>
+    <div class="name"></div>
+</div>
+</body>
+</html>

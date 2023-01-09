@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+    <link href="https://fonts.googleapis.com/css?family=ABeeZee&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main_add_new_song.css') }}">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<head>
+    <title>Document</title></head>
+<body>
+<div class="v1_19">
+    <span class="v1_7">
+        <form id="add_song_form" method="post">
+            <button href="{{ url_for('add_new_song') }}" type="submit" class="btn btn-primary btn-lg">Add New Song</button>
+        </form>
+    </span>
+    <div class="v1_20"></div>
+    <div class="v1_21">
+        <form method="POST">
+            <div class="form-group">
+                <label for="songTitle">Song Title</label>
+                <input type="text" class="form-control form_size" id="songTitle" placeholder="Enter song title" value="Undetermined"
+                       style="margin: 0 auto; display: flex; justify-content: center;">
+            </div>
+            <div class="form-group">
+                <label for="genre">Genre</label>
+                <select class="form-control" id="genre" aria-label="Default select example">
+                    <option selected>Enter genre</option>
+                    <option value="1">Undetermined</option>
+                    <option value="2">Rock</option>
+                    <option value="3">Pop</option>
+                    <option value="4">Rap</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="inspiration">Inspiration</label>
+                <input type="text" class="form-control form_size" id="inspiration" aria-describedby="inspirationHelp" value="Undetermined"
+                       style="margin: 0 auto; display: flex; justify-content: center;">
+                <small id="inspirationHelp" class="form-text text-muted">Enter an artist or a band you want to be inspired by.</small>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+    <span class="v1_22">Muza</span>
+    <span class="v1_23">Your personal AI assisted song notebook</span>
+    <span class="v1_24">My Songs:
+    </span>
+    <div class="name"></div>
+    <div class="name"></div>
+    <div class="name"></div>
+    <div class="name"></div>
+    <div class="name"></div>
+</div>
+</body>
+</html>
