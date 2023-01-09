@@ -25,8 +25,19 @@ body {
   border: 1px solid rgba(255,255,255,1);
   overflow: hidden;
 }
+.v1_8 {
+  width: 212px;
+  height: 490px;
+  background: rgba(248,251,130,1);
+  opacity: 1;
+  position: absolute;
+  top: 129px;
+  right: 78px;
+  border: 1px solid rgba(255,255,255,1);
+  overflow: hidden;
+}
 .v1_3 {
-  width: 675px;
+  width: 915px;
   height: 490px;
   background: rgba(248,250,129,1);
   opacity: 1;
@@ -85,11 +96,11 @@ body {
   text-align: center;
 }
 .v1_18 {
-  width: 599px;
+  width: 915px;
   color: rgba(0,0,0,1);
   position: absolute;
   top: 162px;
-  left: 350px;
+  left: 310px;
   font-family: Inter;
   font-weight: Regular;
   opacity: 1;

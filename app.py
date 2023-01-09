@@ -23,16 +23,15 @@ def add_new_song():
         return redirect(url_for('song', song_name=song_name))
 
     # show the form, it wasn't submitted
-    return render_template('add_new_song.html')
+    return render_template('add_new_song.html', songs=songs)
 
 
 @app.route('/song/<song_name>', methods=['GET', 'POST'])
 def song(song_name):
-    # return render_template('song.html', song_name=song_name)
     if request.method == 'POST':
         if 'save' in request.form:
-            # Read the text from the individual text boxes
-            text = '\n'.join(request.form.getlist('text'))
+            # Read the text from the textarea
+            text = request.form['text']
             # Save the changes made to the song
             songs[song_name] = text
             # Redisplay the song page with the updated text

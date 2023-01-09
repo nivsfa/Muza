@@ -11,6 +11,7 @@
 <body>
 <div class="v1_17">
     <div class="v1_2"></div>
+    <div class="v1_8"></div>
     <div class="v1_3"></div>
     <span class="v1_4">Muza</span>
     <span class="v1_5">Your personal AI assisted song notebook</span>
@@ -19,7 +20,13 @@
             <button href="{{ url_for('add_new_song') }}" type="submit" class="btn btn-primary btn-lg">Add New Song</button>
         </form>
     </span>
-    <span class="v1_6">My Songs:</span>
+    <span class="v1_6">My Songs:
+        <ul>
+            {% for song_name in songs %}
+            <li><a href="{{ url_for('song', song_name=song_name) }}">{{ song_name }}</a></li>
+            {% endfor %}
+        </ul>
+    </span>
     <span
         class="v1_18"><h2>Welcome to your song notebook!</h2><br>
 

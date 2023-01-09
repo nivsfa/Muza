@@ -16,6 +16,7 @@
         </form>
     </span>
     <div class="v1_20"></div>
+    <div class="v1_25"></div>
     <div class="v1_21">
         <form method="POST">
             <div class="form-group">
@@ -45,6 +46,11 @@
     <span class="v1_22">Muza</span>
     <span class="v1_23">Your personal AI assisted song notebook</span>
     <span class="v1_24">My Songs:
+        <ul>
+            {% for song_name in songs %}
+            <li><a href="{{ url_for('song', song_name=song_name) }}">{{ song_name }}</a></li>
+            {% endfor %}
+        </ul>
     </span>
     <div class="name"></div>
     <div class="name"></div>

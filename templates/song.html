@@ -11,17 +11,29 @@
 <body>
 <div class="v1_143">
     <div class="v1_144"></div>
-    <div class="v1_145"></div>
-    <span class="v1_146">Muza</span><span class="v1_147">Your personal AI assisted song notebook</span><span
-        class="v1_148">My Songs:</span>
-    <div class="v1_249">
-        <div class="v1_170"></div>
-        <div class="name"></div>
-        <div class="name"></div>
-        <div class="name"></div>
-        <div class="name"></div>
-        <div class="name"></div>
+    <div class="v1_149"></div>
+    <div class="v1_145">
+        <form method="post">
+            <textarea class="form-control" name="text" id="song-text">{{ text }}</textarea>
+            <br>
+            <input type="submit" value="Save" name="save">
+        </form>
     </div>
+    <span class="v1_146">Muza</span><span class="v1_147">Your personal AI assisted song notebook</span><span
+        class="v1_148">My Songs:
+        <ul>
+            {% for song_name in songs %}
+            <li><a href="{{ url_for('song', song_name=song_name) }}">{{ song_name }}</a></li>
+            {% endfor %}
+        </ul></span>
+<!--    <div class="v1_249">-->
+<!--        <div class="v1_170"></div>-->
+<!--        <div class="name"></div>-->
+<!--        <div class="name"></div>-->
+<!--        <div class="name"></div>-->
+<!--        <div class="name"></div>-->
+<!--        <div class="name"></div>-->
+<!--    </div>-->
     <div class="name"></div>
     <div class="name"></div>
     <div class="name"></div>

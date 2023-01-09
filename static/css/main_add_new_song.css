@@ -37,8 +37,19 @@ body {
   border: 1px solid rgba(255,255,255,1);
   overflow: hidden;
 }
+.v1_25 {
+  width: 212px;
+  height: 490px;
+  background: rgba(248,251,130,1);
+  opacity: 1;
+  position: absolute;
+  top: 129px;
+  right: 78px;
+  border: 1px solid rgba(255,255,255,1);
+  overflow: hidden;
+}
 .v1_21 {
-  width: 675px;
+  width: 915px;
   height: 490px;
   background: rgba(248,250,129,1);
   opacity: 1;
