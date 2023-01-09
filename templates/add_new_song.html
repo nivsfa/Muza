@@ -11,7 +11,7 @@
 <body>
 <div class="v1_19">
     <span class="v1_7">
-        <form id="add_song_form" method="post">
+        <form id="add_song_form" method="POST">
             <button href="{{ url_for('add_new_song') }}" type="submit" class="btn btn-primary btn-lg">Add New Song</button>
         </form>
     </span>
@@ -19,8 +19,8 @@
     <div class="v1_21">
         <form method="POST">
             <div class="form-group">
-                <label for="songTitle">Song Title</label>
-                <input type="text" class="form-control form_size" id="songTitle" placeholder="Enter song title" value="Undetermined"
+                <label for="song_name">Song Title</label>
+                <input type="text" class="form-control" name="song_name" id="song_name" placeholder="Enter song title" value="Undetermined"
                        style="margin: 0 auto; display: flex; justify-content: center;">
             </div>
             <div class="form-group">
@@ -35,11 +35,11 @@
             </div>
             <div class="form-group">
                 <label for="inspiration">Inspiration</label>
-                <input type="text" class="form-control form_size" id="inspiration" aria-describedby="inspirationHelp" value="Undetermined"
+                <input type="text" class="form-control" id="inspiration" aria-describedby="inspirationHelp" value="Undetermined"
                        style="margin: 0 auto; display: flex; justify-content: center;">
                 <small id="inspirationHelp" class="form-text text-muted">Enter an artist or a band you want to be inspired by.</small>
             </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <button href="{{ url_for('song', song_name=song_name) }}" type="submit" class="btn btn-primary">Submit</button>
         </form>
     </div>
     <span class="v1_22">Muza</span>

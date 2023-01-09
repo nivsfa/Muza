@@ -15,7 +15,12 @@ def index():
 @app.route('/add_new_song', methods=['GET', 'POST'])
 def add_new_song():
     if request.method == 'POST':
-        return redirect(url_for('add_new_song'))
+        # Get the song name from the form
+        song_name = request.form['song_name']
+        # Add the new song to the songs dictionary
+        songs[song_name] = ''
+        # Redirect to the new song page using the song name
+        return redirect(url_for('song', song_name=song_name))
 
     # show the form, it wasn't submitted
     return render_template('add_new_song.html')
@@ -23,6 +28,7 @@ def add_new_song():
 
 @app.route('/song/<song_name>', methods=['GET', 'POST'])
 def song(song_name):
+    # return render_template('song.html', song_name=song_name)
     if request.method == 'POST':
         if 'save' in request.form:
             # Read the text from the individual text boxes
@@ -43,11 +49,11 @@ def song(song_name):
 #     # Render the song page with the song title, genre, and inspiration
 #     return render_template('song.html', song_title=song_title)
 
-@app.route('/song/<song_name>/add-line', methods=['POST'])
-def add_line(song_name):
-    line = request.form['line']
-    # Save the line to a variable here
-    return 'Success'
+# @app.route('/song/<song_name>/add-line', methods=['POST'])
+# def add_line(song_name):
+#     line = request.form['line']
+#     # Save the line to a variable here
+#     return 'Success'
 
 
 if __name__ == '__main__':
