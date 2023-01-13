@@ -40,8 +40,8 @@
                 {% if i == 0 %}
                     <div id="main-div-0">
                         <div style="display: flex;">
-                          <button class="help-button" id="help-button-{{ i }}">help</button>
-                          <input rows="1" class="form-control text-song" name="text" id="song-text-{{ i }}">{{ generated_text }}</input>
+                          <button class="help-button" id="help-button-{{ i }}">edit</button>
+                          <input disabled rows="1" class="form-control text-song" name="text" id="song-text-{{ i }}">{{ generated_text }}</input>
                         </div>
                         <div class="help-window" id="help-window-{{ i }}">
                             <button class="help-window-button" id="generate-button-{{ i }}" name="generate" value="generate">Generate</button>
@@ -58,8 +58,8 @@
                 {% else %}
                     <div id="main-div-{{ i }}" style="display: none">
                         <div style="display: flex;">
-                          <button class="help-button" id="help-button-{{ i }}">help</button>
-                          <input rows="1" class="form-control text-song" name="text" id="song-text-{{ i }}">{{ generated_text }}</input>
+                          <button class="help-button" id="help-button-{{ i }}">edit</button>
+                          <input disabled rows="1" class="form-control text-song" name="text" id="song-text-{{ i }}">{{ generated_text }}</input>
                         </div>
                         <div class="help-window" id="help-window-{{ i }}">
                             <button class="help-window-button" id="generate-button-{{ i }}" name="generate" value="generate">Generate</button>
@@ -77,7 +77,9 @@
             <script>
               $("#help-button-{{ i }}").on("click", function(event) {
                 event.preventDefault();
+                $("#song-text-{{ i }}").removeAttr("disabled");
                 $("#help-window-{{ i }}").show();
+                console.log($('[id^="main-div-"]').filter(":visible").last())
               });
             </script>
             <script>
@@ -105,11 +107,12 @@
 {#    </script>#}
     {% for i in range(9) %}
         <script>
-            $('#song-text-{{ i }}').keypress(function(e){
-              if(e.keyCode==13){
+            $('#save-{{ i }}').on("click", function() {
+                $("#help-window-{{ i }}").hide();
+                $("#song-text-{{ i }}").attr("disabled", "disabled");
                 $("#main-div-{{ i + 1 }}").show();
-                $('#song-text-{{ i + 1}}').focus();
-              }
+                {#$.post("/upload_line", function(data));#}
+                {#$('#song-text-{{ i + 1}}').focus();#}
             });
         </script>
     {% endfor %}

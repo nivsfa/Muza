@@ -1,8 +1,26 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 import random
+import sqlite3
+
 app = Flask(__name__, template_folder='templates', static_folder='static')
 
 songs = {}
+conn = sqlite3.connect('muza_database.sqlite',  check_same_thread=False)
+cur = conn.cursor()
+
+
+def add_song_record(title, genre, inspiration):
+    id = cur.execute("SELECT COUNT(*) from song").fetchall()[0][0]
+    cur.execute("INSERT INTO song (id, title, genre, inspiration) \
+          VALUES (?, ?, ?, ?)", (id, title, genre, inspiration))
+    conn.commit()
+
+
+def add_line_song_record(title, line_num, words_num, max_words_num, uniqueness, rhyme, emotion):
+    id = cur.execute("SELECT s.id from song s WHERE s.title = ?", title)
+    cur.execute("INSERT INTO line (song_id, line_num, words_num, max_words_num, uniqueness, rhyme, emotion) \
+          VALUES (?, ?, ?, ?, ?, ?, ?)", (id, line_num, words_num, max_words_num, uniqueness, rhyme, emotion))
+    conn.commit()
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -17,6 +35,9 @@ def add_new_song():
     if request.method == 'POST':
         # Get the song name from the form
         song_name = request.form['song_name']
+        genre = request.form['genre']
+        inspiration = request.form['inspiration']
+        add_song_record(song_name, genre, inspiration)
         # Add the new song to the songs dictionary
         songs[song_name] = ''
         # Redirect to the new song page using the song name
@@ -28,6 +49,12 @@ def add_new_song():
 
 @app.route('/get_text')
 def get_text():
+    i = random.random()
+    return jsonify(text=f"This is the generated text. {i}")
+
+
+@app.route('/upload_line')
+def upload_line(line, line_id, song_title):
     i = random.random()
     return jsonify(text=f"This is the generated text. {i}")
 
@@ -66,4 +93,4 @@ def song(song_name):
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
