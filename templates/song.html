@@ -12,31 +12,130 @@
 <div class="v1_143">
     <div class="v1_144"></div>
     <div class="v1_149"></div>
-    <div class="v1_145">
-        <form method="post">
-            <textarea class="form-control" name="text" id="song-text">{{ text }}</textarea>
-            <br>
-            <input type="submit" value="Save" name="save">
-        </form>
+    <div class="v1_145 col-sm" style="overflow-y:scroll;">
+        <div id="main-div-0">
+            <div style="display: flex;">
+              <button class="help-button" id="help-button-0">help</button>
+              <textarea rows="1" class="form-control" name="text" id="song-text-0">{{ generated_text }}</textarea>
+            </div>
+            <div class="help-window" id="help-window-0">
+                <button class="help-window-button" id="generate-button-0" name="generate" value="generate">Generate</button>
+              <button class="help-window-button">Complete</button>
+              <button class="help-window-button">Rephrase</button>
+                <br>
+                <br>
+              <button class="save-button help-window-button" id="save-0" style="margin: 0 auto; background-color: #4CAF50;
+              width: 10%; align-items: center;">Save</button>
+                <button class="close-button help-window-button" id="close-0" style="margin: 0 auto; background-color: indianred;
+              width: 10%; align-items: center;">Close</button>
+            </div>
+            <button class="add-row-button original" id="add-row-button-0">Add Row</button>
+        <br>
+            </div>
     </div>
-    <span class="v1_146">Muza</span><span class="v1_147">Your personal AI assisted song notebook</span><span
+    <span class="v1_146">Muza</span><span class="v1_147" style="align-items: center">Your personal AI assisted song notebook</span><span
         class="v1_148">My Songs:
         <ul>
             {% for song_name in songs %}
             <li><a href="{{ url_for('song', song_name=song_name) }}">{{ song_name }}</a></li>
             {% endfor %}
         </ul></span>
-<!--    <div class="v1_249">-->
-<!--        <div class="v1_170"></div>-->
-<!--        <div class="name"></div>-->
-<!--        <div class="name"></div>-->
-<!--        <div class="name"></div>-->
-<!--        <div class="name"></div>-->
-<!--        <div class="name"></div>-->
 <!--    </div>-->
-    <div class="name"></div>
-    <div class="name"></div>
-    <div class="name"></div>
 </div>
 </body>
+<script>
+  $("#help-button-0").on("click", function(event) {
+    event.preventDefault();
+    $("#help-window-0").show();
+  });
+</script>
+<script>
+  $("#close-0").on("click", function(event) {
+    $("#help-window-0").hide();
+  });
+</script>
+<script>
+$("#generate-button-0").on("click", function() {
+    event.preventDefault();
+    // Use jQuery's $.get method to make a GET request to the Flask app
+    $.get("/get_text", function(data) {
+      // Append the returned text to the generated-text div
+      $("#song-text-0").val(data.text);
+    });
+  });
+</script>
+
+<script>
+    var counter = 1;
+    $(".original.add-row-button").on("click", function() {
+        counter++;
+        var newDiv = $("#main-div-0").clone();
+        newDiv.find("#main-div-0").attr("id", "main-div-" + counter);
+        newDiv.find("#help-button-0").attr("id", "help-button-" + counter);
+        newDiv.find("#song-text-0").attr("id", "song-text-" + counter);
+        newDiv.find("#help-window-0").attr("id", "help-window-" + counter);
+        newDiv.find("#generate-button-0").attr("id", "generate-button-" + counter);
+        newDiv.find("#save-0").attr("id", "save-" + counter);
+        newDiv.find("#close-0").attr("id", "close-" + counter);
+        newDiv.find("#add-row-button-0").attr("id", "add-row-button-" + counter);
+        newDiv.find("#help-button-"+ counter).on("click", function(event) {
+            event.preventDefault();
+            $("#help-window-" + counter).show();
+        });
+        newDiv.find("#close-" + counter).on("click", function(event) {
+            $("#help-window-" + counter).hide();
+        });
+        newDiv.find("#generate-button-" + counter).on("click", function() {
+            event.preventDefault();
+            $.get("/get_text", function(data) {
+                $("#song-text-" + counter).val(data.text);
+            });
+        });
+        newDiv.insertAfter($("#main-div-0"));
+    });
+</script>
+
+
 </html>
+
+<style>
+
+  /* Style for the help window */
+  .help-window {
+    background-color: white;
+    width: 100%; /* Width same as the text input */
+    padding: 40px; /* Padding for the buttons inside the window */
+    display: none; /* Initially hidden */
+    {#position: absolute; /* Position absolute to the text input */#}
+      flex-wrap: nowrap; /* Keep the buttons in a single row */
+    justify-content: space-between; /* Distribute the buttons evenly across the row */
+  }
+
+  .save-button {
+    margin-right: 10px; /* Margin between buttons */
+    background-color: #4CAF50; /* Green background */
+    color: white; /* White text */
+    padding: 12px 20px; /* Padding for the buttons */
+    border: none; /* No border */
+    cursor: pointer; /* Pointer cursor */
+    width: 10%; /* Width of the button */
+    opacity: 0.9; /* Opacity of the button */
+  }
+
+  /* Style for the buttons inside the window */
+  .help-window-button {
+    margin-right: 10px; /* Margin between buttons */
+    background-color: skyblue; /* Green background */
+    color: white; /* White text */
+    padding: 12px 20px; /* Padding for the buttons */
+    border: none; /* No border */
+    cursor: pointer; /* Pointer cursor */
+    width: 30%; /* Width of the button */
+    opacity: 0.9; /* Opacity of the button */
+  }
+
+  /* Style for the buttons inside the window */
+  .help-window-button:hover {
+    opacity: 1; /* Change the opacity on hover */
+  }
+</style>

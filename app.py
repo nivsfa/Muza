@@ -1,5 +1,5 @@
-from flask import Flask, render_template, request, redirect, url_for
-
+from flask import Flask, render_template, request, redirect, url_for, jsonify
+import random
 app = Flask(__name__, template_folder='templates', static_folder='static')
 
 songs = {}
@@ -26,9 +26,19 @@ def add_new_song():
     return render_template('add_new_song.html', songs=songs)
 
 
+@app.route('/get_text')
+def get_text():
+    i = random.random()
+    return jsonify(text=f"This is the generated text. {i}")
+
+
 @app.route('/song/<song_name>', methods=['GET', 'POST'])
 def song(song_name):
     if request.method == 'POST':
+        # if request.form.get("generate"):
+        #     generated_text = 'generated text'  # function that returns the generated text
+        #     return render_template('song.html', generated_text=generated_text,
+        #                            song_name=song_name, text=songs[song_name], songs=songs)
         if 'save' in request.form:
             # Read the text from the textarea
             text = request.form['text']
