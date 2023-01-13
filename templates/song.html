@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{#{% extends "song.html" %}#}
 <html>
     <link href="https://fonts.googleapis.com/css?family=ABeeZee&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet"/>
@@ -10,92 +11,216 @@
     <title>Document</title></head>
 <body>
 <div class="v1_143">
-    <div class="v1_144"></div>
-    <div class="v1_149"></div>
-    <div class="v1_145 col-sm" style="overflow-y:scroll;">
-        <div id="main-div-0">
-            <div style="display: flex;">
-              <button class="help-button" id="help-button-0">help</button>
-              <textarea rows="1" class="form-control" name="text" id="song-text-0">{{ generated_text }}</textarea>
-            </div>
-            <div class="help-window" id="help-window-0">
-                <button class="help-window-button" id="generate-button-0" name="generate" value="generate">Generate</button>
-              <button class="help-window-button">Complete</button>
-              <button class="help-window-button">Rephrase</button>
-                <br>
-                <br>
-              <button class="save-button help-window-button" id="save-0" style="margin: 0 auto; background-color: #4CAF50;
-              width: 10%; align-items: center;">Save</button>
-                <button class="close-button help-window-button" id="close-0" style="margin: 0 auto; background-color: indianred;
-              width: 10%; align-items: center;">Close</button>
-            </div>
-            <button class="add-row-button original" id="add-row-button-0">Add Row</button>
-        <br>
-            </div>
+    <div class="v1_144">
+
     </div>
-    <span class="v1_146">Muza</span><span class="v1_147" style="align-items: center">Your personal AI assisted song notebook</span><span
-        class="v1_148">My Songs:
+    <div class="v1_149">
+        <b>AI Settings:</b> <br> <br>
+        <input type="checkbox" id="words-num"><label for="words-num-input">number of words in line:</label>
+        <br><input disabled id="words-num-input" type="number" value="10" min="1" max="15" class="form-control"> <br>
+        <input checked type="checkbox" id="max-words-num"><label for="max-words-num-input">max number of words in line:</label>
+        <br><input id="max-words-num-input" type="number" value="10" min="1" max="15" class="form-control">
+        <br><label for="uniqueness">uniqueness</label>
+        <input type="range" style="color: aliceblue" id="uniqueness" name="volume" min="0" max="1" step="0.1"><br>
+        <input checked type="checkbox" id="rhyme"><label for="rhyme">make it rhyme</label> <br>
+        <br><input type="checkbox" id="emotion-check"><label for="emotion">emotion:</label>
+            <select disabled class="form-control" name="emotion" id="emotion">
+                <option value="happiness">Happiness</option>
+              <option value="sadness">Sadness</option>
+              <option value="fear">Fear</option>
+              <option value="anger">Anger</option>
+                <option value="surprise">Surprise</option>
+              <option value="disgust">Disgust</option>
+            </select>
+        <br><button class="save-button help-window-button" id="save" style="margin: 0 auto; background-color: #4CAF50;
+                          width: 50%; align-items: center;">Save</button>
+    </div>
+    <div class="v1_145 col-sm" style="overflow-y:scroll;">
+        {% for i in range(10) %}
+                {% if i == 0 %}
+                    <div id="main-div-0">
+                        <div style="display: flex;">
+                          <button class="help-button" id="help-button-{{ i }}">help</button>
+                          <input rows="1" class="form-control text-song" name="text" id="song-text-{{ i }}">{{ generated_text }}</input>
+                        </div>
+                        <div class="help-window" id="help-window-{{ i }}">
+                            <button class="help-window-button" id="generate-button-{{ i }}" name="generate" value="generate">Generate</button>
+                          <button class="help-window-button">Complete</button>
+                          <button class="help-window-button">Rephrase</button>
+                            <br>
+                            <br>
+                          <button class="save-button help-window-button" id="save-{{ i }}" style="margin: 0 auto; background-color: #4CAF50;
+                          width: 10%; align-items: center;">Save</button>
+                            <button class="close-button help-window-button" id="close-{{ i }}" style="margin: 0 auto; background-color: indianred;
+                          width: 10%; align-items: center;">Close</button>
+                        </div>
+                        </div>
+                {% else %}
+                    <div id="main-div-{{ i }}" style="display: none">
+                        <div style="display: flex;">
+                          <button class="help-button" id="help-button-{{ i }}">help</button>
+                          <input rows="1" class="form-control text-song" name="text" id="song-text-{{ i }}">{{ generated_text }}</input>
+                        </div>
+                        <div class="help-window" id="help-window-{{ i }}">
+                            <button class="help-window-button" id="generate-button-{{ i }}" name="generate" value="generate">Generate</button>
+                          <button class="help-window-button">Complete</button>
+                          <button class="help-window-button">Rephrase</button>
+                            <br>
+                            <br>
+                          <button class="save-button help-window-button" id="save-{{ i }}" style="margin: 0 auto; background-color: #4CAF50;
+                          width: 10%; align-items: center;">Save</button>
+                            <button class="close-button help-window-button" id="close-{{ i }}" style="margin: 0 auto; background-color: indianred;
+                          width: 10%; align-items: center;">Close</button>
+                        </div>
+                        </div>
+                {% endif %}
+            <script>
+              $("#help-button-{{ i }}").on("click", function(event) {
+                event.preventDefault();
+                $("#help-window-{{ i }}").show();
+              });
+            </script>
+            <script>
+              $("#close-{{ i }}").on("click", function(event) {
+                $("#help-window-{{ i }}").hide();
+              });
+            </script>
+            <script>
+            $("#generate-button-{{ i }}").on("click", function() {
+                event.preventDefault();
+                // Use jQuery's $.get method to make a GET request to the Flask app
+                $.get("/get_text", function(data) {
+                  // Append the returned text to the generated-text div
+                  $("#song-text-{{ i }}").val(data.text);
+                });
+              });
+            </script>
+        {% endfor %}
+{#    <script>#}
+{#        $(document).on('keypress', '#song-text-0', function(event) {#}
+{#            if (event.which == 13) {#}
+{#            $("#main-div-1").show();#}
+{#            }#}
+{#            });#}
+{#    </script>#}
+    {% for i in range(9) %}
+        <script>
+            $('#song-text-{{ i }}').keypress(function(e){
+              if(e.keyCode==13){
+                $("#main-div-{{ i + 1 }}").show();
+                $('#song-text-{{ i + 1}}').focus();
+              }
+            });
+        </script>
+    {% endfor %}
+    </div>
+    <span class="v1_146">Muza</span><span class="v1_147" style="align-items: center">Your personal AI assisted song notebook</span>
+
+    </span>
+    <span
+        class="v1_148">
+
+        My Songs:
         <ul>
             {% for song_name in songs %}
             <li><a href="{{ url_for('song', song_name=song_name) }}">{{ song_name }}</a></li>
             {% endfor %}
-        </ul></span>
+        </ul>
+    </span>
 <!--    </div>-->
 </div>
 </body>
-<script>
-  $("#help-button-0").on("click", function(event) {
-    event.preventDefault();
-    $("#help-window-0").show();
-  });
-</script>
-<script>
-  $("#close-0").on("click", function(event) {
-    $("#help-window-0").hide();
-  });
-</script>
-<script>
-$("#generate-button-0").on("click", function() {
-    event.preventDefault();
-    // Use jQuery's $.get method to make a GET request to the Flask app
-    $.get("/get_text", function(data) {
-      // Append the returned text to the generated-text div
-      $("#song-text-0").val(data.text);
-    });
-  });
-</script>
 
 <script>
-    var counter = 1;
-    $(".original.add-row-button").on("click", function() {
-        counter++;
-        var newDiv = $("#main-div-0").clone();
-        newDiv.find("#main-div-0").attr("id", "main-div-" + counter);
-        newDiv.find("#help-button-0").attr("id", "help-button-" + counter);
-        newDiv.find("#song-text-0").attr("id", "song-text-" + counter);
-        newDiv.find("#help-window-0").attr("id", "help-window-" + counter);
-        newDiv.find("#generate-button-0").attr("id", "generate-button-" + counter);
-        newDiv.find("#save-0").attr("id", "save-" + counter);
-        newDiv.find("#close-0").attr("id", "close-" + counter);
-        newDiv.find("#add-row-button-0").attr("id", "add-row-button-" + counter);
-        newDiv.find("#help-button-"+ counter).on("click", function(event) {
-            event.preventDefault();
-            $("#help-window-" + counter).show();
-        });
-        newDiv.find("#close-" + counter).on("click", function(event) {
-            $("#help-window-" + counter).hide();
-        });
-        newDiv.find("#generate-button-" + counter).on("click", function() {
-            event.preventDefault();
-            $.get("/get_text", function(data) {
-                $("#song-text-" + counter).val(data.text);
+    $('.song-text').keypress(function(e){
+      if(e.keyCode==13){
+          var name=$(this).attr("id");
+          console.log(name);
+          {#$("#help-window-{{ i + 1 }}").show();#}
+      }
+    });
+</script>
+<style>
+
+    input[type=number]::-webkit-inner-spin-button {
+    opacity: 1
+    }
+
+</style>
+
+    <script>
+        $(document).ready(function() {
+            var the_terms = $("#words-num");
+
+            the_terms.click(function() {
+                if ($(this).is(":checked")) {
+                    $("#words-num-input").removeAttr("disabled");
+                } else {
+                    $("#words-num-input").attr("disabled", "disabled");
+                }
+            });
+
+            var the_terms = $("#max-words-num");
+
+            the_terms.click(function() {
+                if ($(this).is(":checked")) {
+                    $("#max-words-num-input").removeAttr("disabled");
+                } else {
+                    $("#max-words-num-input").attr("disabled", "disabled");
+                }
+            });
+
+            var the_terms = $("#emotion-check");
+
+            the_terms.click(function() {
+                if ($(this).is(":checked")) {
+                    $("#emotion").removeAttr("disabled");
+                } else {
+                    $("#emotion").attr("disabled", "disabled");
+                }
             });
         });
-        newDiv.insertAfter($("#main-div-0"));
-    });
-</script>
+    </script>
+
+{#<script>#}
+{#    var counter = 0;#}
+{#    $(document).ready(function(){#}
+{#        $('#song-text-0').keypress(function(e){#}
+{#          if(e.keyCode==13){#}
+{#            counter = counter + 1;#}
+{#            var newDiv = $("#main-div-0").clone().prop("id", "main-div-"+counter);#}
+            {#newDiv.find("#main-div-0").attr("id", "main-div-" + counter);#}
+{#            newDiv.find("#help-button-0").prop("id", "help-button-" + counter);#}
+{#            newDiv.find("#song-text-0").prop("id", "song-text-" + counter);#}
+{#            newDiv.find("#help-window-0").prop("id", "help-window-" + counter);#}
+{#            newDiv.find("#generate-button-0").prop("id", "generate-button-" + counter);#}
+{#            newDiv.find("#save-0").prop("id", "save-" + counter);#}
+{#            newDiv.find("#close-0").prop("id", "close-" + counter);#}
+{#            newDiv.find("#add-row-button-0").prop("id", "add-row-button-" + counter);#}
+{#            newDiv.find("#help-button-"+ counter).on("click", function(event) {#}
+{#                event.preventDefault();#}
+{#                $("#help-window-" + counter).show();#}
+{#            });#}
+{#            newDiv.find("#close-" + counter).on("click", function(event) {#}
+{#                $("#help-window-" + counter).hide();#}
+{#            });#}
+{#            newDiv.find("#generate-button-" + counter).on("click", function() {#}
+{#                event.preventDefault();#}
+{#                $.get("/get_text", function(data) {#}
+{#                    $("#song-text-" + counter).val(data.text);#}
+{#                });#}
+{#            });#}
+            {#$("#song-text-" + counter).val('');#}
+            {#$(this).next('.text-song').focus();#}
+{#            newDiv.insertAfter($("#main-div-0"));#}
+{#          newDiv.find("#song-text-" + counter).text('Cloned ' + (counter-1));}#}
+{#          console.log(newDiv.find("#song-text-" + counter) , "Hello, world!");#}
+{#        });#}
+{#    });#}
+{#</script>#}
 
 
+</html>
 </html>
 
 <style>
@@ -138,4 +263,5 @@ $("#generate-button-0").on("click", function() {
   .help-window-button:hover {
     opacity: 1; /* Change the opacity on hover */
   }
+
 </style>
