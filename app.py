@@ -1,24 +1,34 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 import random
 import sqlite3
+import openai
+
+# Set the API key
+openai.api_key = "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"
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
 
+model_engine = "text-davinci-002"
 songs = {}
 conn = sqlite3.connect('muza_database.sqlite',  check_same_thread=False)
 cur = conn.cursor()
 songs_list = cur.execute("SELECT s.title, s.id from song s").fetchall()
+songs_names = cur.execute("SELECT s.title from song s").fetchall()
+songs_names = list(map(lambda x: x[0], songs_names))
 id2name = {k: v for v, k in songs_list}
+name2id = {k: v for k, v in songs_list}
 songs_text = cur.execute("SELECT l.song_id, l.line_num, l.line from line l").fetchall()
 songs = {}
 for line in songs_text:
     if id2name[line[0]] not in songs.keys():
         songs[id2name[line[0]]] = []
     songs[id2name[line[0]]].append((line[1], line[2]))
-print()
+
 
 def add_song_record(title, genre, inspiration):
     id = cur.execute("SELECT COUNT(*) from song").fetchall()[0][0]
+    if title in songs_names:
+        title = title + '+'
     cur.execute("INSERT INTO song (id, title, genre, inspiration) \
           VALUES (?, ?, ?, ?)", (id, title, genre, inspiration))
     conn.commit()
@@ -55,10 +65,26 @@ def add_new_song():
     return render_template('add_new_song.html', songs=songs)
 
 
-@app.route('/get_text')
-def get_text():
-    i = random.random()
-    return jsonify(text=f"This is the generated text. {i}")
+@app.route('/generate')
+def generate(song_name='a', line_num='a'):
+    # lyrics = cur.execute("SELECT l.line from line l where l.song_id=?", name2id[song_name]).fetchall()
+    # if line_num < len(lyrics):
+    #     lyrics.pop(line_num)
+    # lyrics = '\n'.join(list(map(lambda x: x[0], lyrics)))
+    # generate_prompt = f'", can you generate a new line that fits in this context before the {line_num} line? '
+    # prompt = 'Given the song "' \
+    #          + lyrics + \
+    #          generate_prompt
+    # completions = openai.Completion.create(
+    #     engine=model_engine,
+    #     prompt=prompt,
+    #     max_tokens=1024,
+    #     n=1,
+    #     stop=None,
+    #     temperature=0.5,
+    # )
+    return jsonify(text='aaaa')
+    # return jsonify(text=f"{completions.choices[0].text}")
 
 
 @app.route('/upload_line')

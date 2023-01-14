@@ -115,7 +115,10 @@
             $("#generate-button-{{ i }}").on("click", function() {
                 event.preventDefault();
                 // Use jQuery's $.get method to make a GET request to the Flask app
-                $.get("/get_text", function(data) {
+                console.log({{ song_name }});
+
+
+                $.get("/generate", {song_name: {{ song_name }}, line_num:{{ i }}},function(data) {
                   // Append the returned text to the generated-text div
                   $("#song-text-{{ i }}").val(data.text);
                 });
