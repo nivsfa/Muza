@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, jsonify
 import random
 import sqlite3
 import openai
+from copy import deepcopy
 
 # Set the API key
 openai.api_key = "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"
@@ -12,6 +13,7 @@ model_engine = "text-davinci-002"
 songs = {}
 conn = sqlite3.connect('muza_database.sqlite',  check_same_thread=False)
 cur = conn.cursor()
+
 songs_list = cur.execute("SELECT s.title, s.id from song s").fetchall()
 songs_names = cur.execute("SELECT s.title from song s").fetchall()
 songs_names = list(map(lambda x: x[0], songs_names))
@@ -66,25 +68,29 @@ def add_new_song():
 
 
 @app.route('/generate')
-def generate(song_name='a', line_num='a'):
-    # lyrics = cur.execute("SELECT l.line from line l where l.song_id=?", name2id[song_name]).fetchall()
-    # if line_num < len(lyrics):
-    #     lyrics.pop(line_num)
-    # lyrics = '\n'.join(list(map(lambda x: x[0], lyrics)))
-    # generate_prompt = f'", can you generate a new line that fits in this context before the {line_num} line? '
-    # prompt = 'Given the song "' \
-    #          + lyrics + \
-    #          generate_prompt
-    # completions = openai.Completion.create(
-    #     engine=model_engine,
-    #     prompt=prompt,
-    #     max_tokens=1024,
-    #     n=1,
-    #     stop=None,
-    #     temperature=0.5,
-    # )
-    return jsonify(text='aaaa')
-    # return jsonify(text=f"{completions.choices[0].text}")
+def generate():
+    song_id = cur.execute("SELECT p.last_song_id from parameters p").fetchall()[0][0]
+    line_num = int(request.args.get("line_num"))
+    lyrics = cur.execute("SELECT l.line from line l where l.song_id=?", str(song_id)).fetchall()
+    print(lyrics)
+    if line_num < len(lyrics):
+        lyrics.pop(line_num)
+    lyrics = '\n'.join(list(map(lambda x: x[0], lyrics)))
+    generate_prompt = f'", generate a lyric line right before the {line_num} line. Make it rhyme, and make it start ' \
+                      f'with the first word of {line_num} line." '
+
+    prompt = 'Given the song "' \
+             + lyrics + \
+             generate_prompt
+    completions = openai.Completion.create(
+        engine=model_engine,
+        prompt=prompt,
+        max_tokens=30,
+        n=1,
+        stop=None,
+        temperature=0.5,
+    )
+    return jsonify(text=f"{completions.choices[0].text}")
 
 
 @app.route('/upload_line')
@@ -95,6 +101,8 @@ def upload_line(line, line_id, song_title):
 
 @app.route('/song/<song_name>', methods=['GET', 'POST'])
 def song(song_name):
+    cur.execute("UPDATE parameters SET last_song_id =? WHERE id = 1", (name2id[song_name],))
+    conn.commit()
     if request.method == 'POST':
         # if request.form.get("generate"):
         #     generated_text = 'generated text'  # function that returns the generated text

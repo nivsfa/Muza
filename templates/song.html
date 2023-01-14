@@ -37,6 +37,7 @@
     </div>
     <div class="v1_145 col-sm" style="overflow-y:scroll;">
         {% for i in range(100) %}
+{#            {% song_name = song_name|string %}#}
                 {% if i == 0 %}
                     <div id="main-div-0">
                         <div style="display: flex;">
@@ -115,15 +116,14 @@
             $("#generate-button-{{ i }}").on("click", function() {
                 event.preventDefault();
                 // Use jQuery's $.get method to make a GET request to the Flask app
-                console.log({{ song_name }});
-
-
-                $.get("/generate", {song_name: {{ song_name }}, line_num:{{ i }}},function(data) {
+                var song_name = $(this).data("song_name");
+                $.get("/generate", {song_name: song_name, line_num:{{ i }}},function(data) {
                   // Append the returned text to the generated-text div
                   $("#song-text-{{ i }}").val(data.text);
                 });
               });
             </script>
+
         {% endfor %}
 {#    <script>#}
 {#        $(document).on('keypress', '#song-text-0', function(event) {#}
