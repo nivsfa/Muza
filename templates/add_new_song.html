@@ -1,18 +1,18 @@
 <!DOCTYPE html>
-<html style="background-color: #FEC700; height: 100%;">
+<html style="background: linear-gradient(to right, #517DF0 50%, white 50%); height: 100%;">
     <link href="https://fonts.googleapis.com/css?family=ABeeZee&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet"/>
 {#    <link rel="stylesheet" href="{{ url_for('static', filename='css/main_add_new_song.css') }}">#}
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-<head style="background-color: #FEC700; height: 100%;">
+<head style="background: linear-gradient(to right, #517DF0 50%, white 50%); height: 100%;">
     <title>Document</title></head>
-<body style="background-color: #FEC700; height: 100%;">
+<body style="background: linear-gradient(to right, #517DF0 50%, white 50%); height: 100%;">
 <div class="v1_19">
     <span class="v1_7">
-        <form id="add_song_form" method="POST">
-            <button href="{{ url_for('add_new_song') }}" type="submit" class="btn btn-primary btn-lg">Add New Song</button>
+<form id="add_song_form" method="post">
+            <button href="{{ url_for('add_new_song') }}" type="submit" style="background-color:#FF6433;" class="btn btn-primary btn-lg">Add New Song</button>
         </form>
     </span>
     <div class="v1_20"></div>
@@ -38,13 +38,17 @@
                           width: 50%; align-items: center;">Save</button>
     </div>
     <div class="v1_21">
+
         <form method="POST">
+
+{#            <div class="form-group">#}
+
+
+{#            </div>#}
             <div class="form-group">
                 <label for="song_name">Song Title</label>
-                <input type="text" class="form-control" name="song_name" id="song_name" placeholder="Enter song title" value="Undetermined"
-                       style="margin: 0 auto; display: flex; justify-content: center;">
-            </div>
-            <div class="form-group">
+                <input type="text" class="form-control" name="song_name" id="song_name" value="Undetermined"
+                       style="margin: 0 auto; display: flex; justify-content: center;"><br>
                 <label for="genre">Genre</label>
                 <select class="form-control" name="genre" id="genre" aria-label="Default select example">
                     <option selected>Enter genre</option>
@@ -124,12 +128,11 @@ body {
 .v1_20 {
   width: 212px;
   height: 600px;
-  background: white;
+  background: #517DF0;
   opacity: 1;
   position: absolute;
   top: 129px;
   left: 78px;
-  border: 1px solid rgba(255,255,255,1);
   overflow: hidden;
 }
 .v1_25 {
@@ -147,7 +150,7 @@ body {
 .v1_21 {
   width: 915px;
   height: 600px;
-  background: white;
+  background: #DAEAFE;
   opacity: 1;
   position: absolute;
   top: 129px;
@@ -159,40 +162,44 @@ body {
   justify-content: center;
 }
 .v1_22 {
-  width: 100%;
-  color: rgba(41,55,129,1);
+  width: 50%;
+  color: white;
   position: absolute;
   top: 31px;
-  left: 0px;
+  left: 18%;
   font-family: ABeeZee;
   font-weight: Regular;
-  font-size: 28px;
+  font-size: 80px;
   opacity: 1;
   text-align: center;
 }
 .v1_23 {
-  width: 100%;
-  color: rgba(41,55,130,1);
+  width: 50%;
+  color: #517DF0;
   position: absolute;
   top: 71px;
-  left: 0px;
+  left: 51%;
   font-family: Inter;
   font-weight: Regular;
-  font-size: 14px;
-  opacity: 1;
-  text-align: center;
-}
-.v1_24 {
-  width: 72px;
-  color: rgba(0,0,0,1);
-  position: relative;
-  top: 143px;
-  left: 100px;
-  font-family: Inter;
-  font-weight: Bold;
-  font-size: 14px;
+  font-size: 20px;
   opacity: 1;
   text-align: left;
+}
+.v1_24 {
+  width: 140px;
+  color: white;
+  position: absolute;
+  top: 143px;
+  left: 80px;
+  font-family: ABeeZee;
+  font-weight: Bold;
+  font-size: 16px;
+  opacity: 1;
+  text-align: left;
+    padding: 5px;
+}
+a:link, a:visited {
+  color: white;
 }
 .name {
   color: #fff;

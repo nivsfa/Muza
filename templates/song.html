@@ -1,18 +1,20 @@
 <!DOCTYPE html>
 {#{% extends "song.html" %}#}
-<html style="background-color: #FEC700; height: 100%;">
+<html style="background: linear-gradient(to right, #517DF0 50%, white 50%); height: 100%;">
     <link href="https://fonts.googleapis.com/css?family=ABeeZee&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet"/>
 {#    <link rel="stylesheet" href="{{ url_for('static', filename='css/main_song.css') }}">#}
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-<head style="background-color: #FEC700; height: 100%;">
+<head style="background: linear-gradient(to right, #517DF0 50%, white 50%); height: 100%;">
     <title>Document</title></head>
-<body style="background-color: #FEC700; height: 100%;">
+<body style="background: linear-gradient(to right, #517DF0 50%, white 50%); height: 100%;">
 <div class="v1_143">
     <div class="v1_144">
-
+<form id="add_song_form" method="post">
+            <button href="{{ url_for('add_new_song') }}" type="submit" style="background-color:#FF6433;" class="btn btn-primary btn-lg">Add New Song</button>
+        </form>
     </div>
     <div class="v1_149">
         <b>AI Settings:</b> <br> <br>
@@ -39,7 +41,7 @@
         {% for i in range(100) %}
 {#            {% song_name = song_name|string %}#}
                 {% if i == songs[song_name]|length %}
-                    <div id="main-div-0">
+                    <div id="main-div-{{ i }}">
                         <div style="display: flex;">
                           <button class="help-button" id="help-button-{{ i }}">edit</button>
                             {% if i < songs[song_name]|length %}
@@ -104,7 +106,6 @@
                 event.preventDefault();
                 $("#song-text-{{ i }}").removeAttr("disabled");
                 $("#help-window-{{ i }}").show();
-                console.log($('[id^="main-div-"]').filter(":visible").last())
               });
             </script>
             <script>
@@ -272,7 +273,6 @@
 
 
 </html>
-</html>
 
 <style>
 
@@ -282,7 +282,7 @@
     width: 100%; /* Width same as the text input */
     padding: 40px; /* Padding for the buttons inside the window */
     display: none; /* Initially hidden */
-    {#position: absolute; /* Position absolute to the text input */#}
+    position: relative; /* Position absolute to the text input */
       flex-wrap: nowrap; /* Keep the buttons in a single row */
     justify-content: space-between; /* Distribute the buttons evenly across the row */
   }
@@ -301,7 +301,7 @@
   /* Style for the buttons inside the window */
   .help-window-button {
     margin-right: 10px; /* Margin between buttons */
-    background-color: skyblue; /* Green background */
+    background-color: #245DEC; /* Green background */
     color: white; /* White text */
     padding: 12px 20px; /* Padding for the buttons */
     border: none; /* No border */
@@ -341,12 +341,11 @@ body {
 .v1_144 {
   width: 212px;
   height: 600px;
-  background: white;
+  background: #517DF0;
   opacity: 1;
   position: absolute;
-  top: 129px;
-  left: 78px;
-  border: 1px solid rgba(255,255,255,1);
+  top: 80px;
+  left: 95px;
   overflow: hidden;
 }
 .v1_149 {
@@ -364,7 +363,7 @@ body {
 .v1_145 {
   width: 915px;
   height: 600px;
-  background: white;
+  background: #DAEAFE;
   opacity: 1;
   position: absolute;
   top: 129px;
@@ -373,40 +372,56 @@ body {
   overflow: hidden;
 }
 .v1_146 {
-  width: 100%;
-  color: rgba(41,55,129,1);
+    width: 50%;
+  color: white;
   position: absolute;
   top: 31px;
-  left: 0px;
+  left: 18%;
   font-family: ABeeZee;
   font-weight: Regular;
-  font-size: 28px;
+  font-size: 80px;
   opacity: 1;
   text-align: center;
 }
 .v1_147 {
-  width: 100%;
-  color: rgba(41,55,130,1);
+  width: 50%;
+  color: #517DF0;
   position: absolute;
   top: 71px;
-  left: 0px;
+  left: 51%;
   font-family: Inter;
   font-weight: Regular;
-  font-size: 14px;
-  opacity: 1;
-  text-align: center;
-}
-.v1_148 {
-  width: 500px;
-  color: rgba(0,0,0,1);
-  position: absolute;
-  top: 143px;
-  left: 100px;
-  font-family: Inter;
-  font-weight: Bold;
-  font-size: 14px;
+  font-size: 20px;
   opacity: 1;
   text-align: left;
+}
+{#.v1_148 {#}
+{#  width: 72px;#}
+{#  color: rgba(0,0,0,1);#}
+{#  position: absolute;#}
+{#  top: 143px;#}
+{#  left: 150px;#}
+{#  font-family: Inter;#}
+{#  font-weight: Bold;#}
+{#  font-size: 14px;#}
+{#  opacity: 1;#}
+{#  text-align: center;#}
+{#}#}
+.v1_148 {
+  width: 140px;
+  color: white;
+  position: absolute;
+  top: 143px;
+  left: 80px;
+  font-family: ABeeZee;
+  font-weight: Bold;
+  font-size: 16px;
+  opacity: 1;
+  text-align: center;
+    padding: 5px;
+}
+a:link, a:visited {
+  color: white;
 }
 .v1_249 {
   width: 492px;
@@ -432,5 +447,6 @@ body {
   border: 1px solid rgba(0,0,0,1);
   overflow: hidden;
 }
+
 
 </style>

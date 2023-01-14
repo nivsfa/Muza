@@ -32,6 +32,9 @@ def add_song_record(title, genre, inspiration):
     cur.execute("INSERT INTO song (id, title, genre, inspiration) \
           VALUES (?, ?, ?, ?)", (id, title, genre, inspiration))
     conn.commit()
+    name2id[title] = id
+    id2name[id] = title
+    songs[title] = []
 
 
 def add_line_song_record(title, line_num, words_num, max_words_num, uniqueness, rhyme, emotion):

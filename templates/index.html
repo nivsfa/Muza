@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html style="background-color: #FEC700; height: 100%;">
+<html style="background: linear-gradient(to right, #517DF0 50%, white 50%); height: 100%;">
     <link href="https://fonts.googleapis.com/css?family=ABeeZee&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet"/>
 {#    <link rel="stylesheet" href="{{ url_for('static', filename='css/main_index.css') }}">#}
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-<head style="background-color: #FEC700; height: 100%";>
+<head style="background: linear-gradient(to right, #517DF0 50%, white 50%); height: 100%";>
     <title>Document</title></head>
-<body style="background-color: #FEC700; height: 100%";>
+<body style="background: linear-gradient(to right, #517DF0 50%, white 50%); height: 100%";>
 <div class="v1_17">
     <div class="v1_2"></div>
     <div class="v1_8">
@@ -39,7 +39,7 @@
     <span class="v1_5">Your personal AI assisted song notebook</span>
     <span class="v1_7">
         <form id="add_song_form" method="post">
-            <button href="{{ url_for('add_new_song') }}" type="submit" class="btn btn-primary btn-lg">Add New Song</button>
+            <button href="{{ url_for('add_new_song') }}" type="submit" style="background-color:#FF6433;" class="btn btn-primary btn-lg">Add New Song</button>
         </form>
     </span>
     <span class="v1_6">My Songs:
@@ -85,7 +85,7 @@ body {
 .v1_2 {
   width: 212px;
   height: 600px;
-  background: white;
+  background: #517DF0;
   opacity: 1;
   position: absolute;
   top: 129px;
@@ -108,7 +108,7 @@ body {
 .v1_3 {
   width: 915px;
   height: 600px;
-  background: white;
+  background: #DAEAFE;
   opacity: 1;
   position: absolute;
   top: 129px;
@@ -127,40 +127,43 @@ body {
     opacity: 0.9; /* Opacity of the button */
   }
 .v1_4 {
-  width: 100%;
-  color: rgba(41,55,129,1);
+  width: 50%;
+  color: white;
   position: absolute;
   top: 31px;
-  left: 0px;
+  left: 18%;
   font-family: ABeeZee;
   font-weight: Regular;
-  font-size: 28px;
+  font-size: 80px;
   opacity: 1;
   text-align: center;
 }
 .v1_5 {
-  width: 100%;
-  color: rgba(41,55,130,1);
+  width: 50%;
+  color: #517DF0;
   position: absolute;
   top: 71px;
-  left: 0px;
+  left: 51%;
   font-family: Inter;
   font-weight: Regular;
-  font-size: 14px;
-  opacity: 1;
-  text-align: center;
-}
-.v1_6 {
-  width: 72px;
-  color: rgba(0,0,0,1);
-  position: relative;
-  top: 143px;
-  left: 100px;
-  font-family: Inter;
-  font-weight: Bold;
-  font-size: 14px;
+  font-size: 20px;
   opacity: 1;
   text-align: left;
+}
+.v1_6 {
+  width: 140px;
+  color: white;
+  position: relative;
+  top: 143px;
+  left: 80px;
+  font-family: ABeeZee;
+  font-weight: Bold;
+  font-size: 16px;
+  opacity: 1;
+  text-align: left;
+}
+a:link, a:visited {
+  color: white;
 }
 .v1_7 {
   width: 72px;
