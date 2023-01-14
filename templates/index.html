@@ -1,18 +1,40 @@
 <!DOCTYPE html>
-<html>
+<html style="background-color: #FEC700; height: 100%;">
     <link href="https://fonts.googleapis.com/css?family=ABeeZee&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet"/>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/main_index.css') }}">
+{#    <link rel="stylesheet" href="{{ url_for('static', filename='css/main_index.css') }}">#}
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-<head>
+<head style="background-color: #FEC700; height: 100%";>
     <title>Document</title></head>
-<body>
+<body style="background-color: #FEC700; height: 100%";>
 <div class="v1_17">
     <div class="v1_2"></div>
-    <div class="v1_8"></div>
-    <div class="v1_3"></div>
+    <div class="v1_8">
+        <b>AI Settings:</b> <br> <br>
+        <input type="checkbox" id="words-num"><label for="words-num-input">number of words in line:</label>
+        <br><input disabled id="words-num-input" type="number" value="10" min="1" max="15" class="form-control"> <br>
+        <input checked type="checkbox" id="max-words-num"><label for="max-words-num-input">max number of words in line:</label>
+        <br><input id="max-words-num-input" type="number" value="10" min="1" max="15" class="form-control">
+        <br><label for="uniqueness">uniqueness</label>
+        <input type="range" style="color: aliceblue" id="uniqueness" name="volume" min="0" max="1" step="0.1"><br>
+        <input checked type="checkbox" id="rhyme"><label for="rhyme">make it rhyme</label> <br>
+        <br><input type="checkbox" id="emotion-check"><label for="emotion">emotion:</label>
+            <select disabled class="form-control" name="emotion" id="emotion">
+                <option value="happiness">Happiness</option>
+              <option value="sadness">Sadness</option>
+              <option value="fear">Fear</option>
+              <option value="anger">Anger</option>
+                <option value="surprise">Surprise</option>
+              <option value="disgust">Disgust</option>
+            </select>
+        <br><button class="save-button help-window-button" id="save" style="margin: 0 auto; background-color: #4CAF50;
+                          width: 50%; align-items: center;">Save</button>
+    </div>
+    <div class="v1_3">
+
+    </div>
     <span class="v1_4">Muza</span>
     <span class="v1_5">Your personal AI assisted song notebook</span>
     <span class="v1_7">
@@ -23,12 +45,11 @@
     <span class="v1_6">My Songs:
         <ul>
             {% for song_name in songs %}
-            <li><a href="{{ url_for('song', song_name=song_name) }}">{{ song_name }}</a></li>
+            <li style="left: 100px"><a href="{{ url_for('song', song_name=song_name) }}">{{ song_name }}</a></li>
             {% endfor %}
         </ul>
     </span>
-    <span
-        class="v1_18"><h2>Welcome to your song notebook!</h2><br>
+    <span class="v1_18"><h2>Welcome to your song notebook!</h2><br>
 
 You can write new songs here, save them, and load old songs<br>
 If you get stuck or running out of muse, ask your personal AI assistant
@@ -43,3 +64,130 @@ To begin, click “Add New Song” button</span>
 </div>
 </body>
 </html>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+body {
+  font-size: 14px;
+}
+{#.v1_17 {#}
+{#  width: 100%;#}
+{#  height: 687px;#}
+{#  background: rgba(248,251,130,0.4000000059604645);#}
+{#  opacity: 1;#}
+{#  position: relative;#}
+{#  top: 0px;#}
+{#  left: 0px;#}
+{#  overflow: hidden;#}
+{#}#}
+.v1_2 {
+  width: 212px;
+  height: 600px;
+  background: white;
+  opacity: 1;
+  position: absolute;
+  top: 129px;
+  left: 78px;
+  {#border: 1px solid rgba(255,255,255,1);#}
+  overflow: hidden;
+}
+.v1_8 {
+  width: 212px;
+  height: 600px;
+  background: white;
+  opacity: 1;
+  position: absolute;
+  top: 129px;
+  right: 78px;
+  {#border: 1px solid rgba(255,255,255,1);#}
+    padding: 15px;
+  overflow: hidden;
+}
+.v1_3 {
+  width: 915px;
+  height: 600px;
+  background: white;
+  opacity: 1;
+  position: absolute;
+  top: 129px;
+  left: 310px;
+  {#border: 1px solid rgba(255,255,255,1);#}
+  overflow: hidden;
+}
+  .save-button {
+    margin-right: 10px; /* Margin between buttons */
+    background-color: #4CAF50; /* Green background */
+    color: white; /* White text */
+    padding: 12px 20px; /* Padding for the buttons */
+    border: none; /* No border */
+    cursor: pointer; /* Pointer cursor */
+    width: 10%; /* Width of the button */
+    opacity: 0.9; /* Opacity of the button */
+  }
+.v1_4 {
+  width: 100%;
+  color: rgba(41,55,129,1);
+  position: absolute;
+  top: 31px;
+  left: 0px;
+  font-family: ABeeZee;
+  font-weight: Regular;
+  font-size: 28px;
+  opacity: 1;
+  text-align: center;
+}
+.v1_5 {
+  width: 100%;
+  color: rgba(41,55,130,1);
+  position: absolute;
+  top: 71px;
+  left: 0px;
+  font-family: Inter;
+  font-weight: Regular;
+  font-size: 14px;
+  opacity: 1;
+  text-align: center;
+}
+.v1_6 {
+  width: 72px;
+  color: rgba(0,0,0,1);
+  position: relative;
+  top: 143px;
+  left: 100px;
+  font-family: Inter;
+  font-weight: Bold;
+  font-size: 14px;
+  opacity: 1;
+  text-align: left;
+}
+.v1_7 {
+  width: 72px;
+  color: rgba(0,0,0,1);
+  position: absolute;
+  top: 75px;
+  left: 105px;
+  font-family: Inter;
+  font-weight: Bold;
+  font-size: 14px;
+  opacity: 1;
+  text-align: center;
+}
+.v1_18 {
+  width: 915px;
+  color: rgba(0,0,0,1);
+  position: absolute;
+  top: 162px;
+  left: 310px;
+  font-family: Inter;
+  font-weight: Regular;
+  opacity: 1;
+  text-align: center;
+}
+{#.name {#}
+{#  color: #fffdd0;#}
+{#}#}
+
+
+</style>
