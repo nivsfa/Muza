@@ -36,12 +36,16 @@
                           width: 50%; align-items: center;">Save</button>
     </div>
     <div class="v1_145 col-sm" style="overflow-y:scroll;">
-        {% for i in range(10) %}
+        {% for i in range(100) %}
                 {% if i == 0 %}
                     <div id="main-div-0">
                         <div style="display: flex;">
                           <button class="help-button" id="help-button-{{ i }}">edit</button>
-                          <input disabled rows="1" class="form-control text-song" name="text" id="song-text-{{ i }}">{{ generated_text }}</input>
+                            {% if i < songs[song_name]|length %}
+                                <input disabled rows="1" class="form-control text-song" name="text" id="song-text-{{ i }}" value="{{ songs[song_name][i][1] }}">
+                            {% else %}
+                                <input disabled rows="1" class="form-control text-song" name="text" id="song-text-{{ i }}" value="{{ generated_text }}">
+                            {% endif %}
                         </div>
                         <div class="help-window" id="help-window-{{ i }}">
                             <button class="help-window-button" id="generate-button-{{ i }}" name="generate" value="generate">Generate</button>
@@ -56,23 +60,43 @@
                         </div>
                         </div>
                 {% else %}
-                    <div id="main-div-{{ i }}" style="display: none">
-                        <div style="display: flex;">
-                          <button class="help-button" id="help-button-{{ i }}">edit</button>
-                          <input disabled rows="1" class="form-control text-song" name="text" id="song-text-{{ i }}">{{ generated_text }}</input>
-                        </div>
-                        <div class="help-window" id="help-window-{{ i }}">
-                            <button class="help-window-button" id="generate-button-{{ i }}" name="generate" value="generate">Generate</button>
-                          <button class="help-window-button">Complete</button>
-                          <button class="help-window-button">Rephrase</button>
-                            <br>
-                            <br>
-                          <button class="save-button help-window-button" id="save-{{ i }}" style="margin: 0 auto; background-color: #4CAF50;
-                          width: 10%; align-items: center;">Save</button>
-                            <button class="close-button help-window-button" id="close-{{ i }}" style="margin: 0 auto; background-color: indianred;
-                          width: 10%; align-items: center;">Close</button>
-                        </div>
-                        </div>
+                    {% if i < songs[song_name]|length %}
+                        <div id="main-div-{{ i }}" style="display: block">
+                            <div style="display: flex;">
+                              <button class="help-button" id="help-button-{{ i }}">edit</button>
+                              <input disabled rows="1" class="form-control text-song" name="text" id="song-text-{{ i }}" value="{{ songs[song_name][i][1] }}">
+                            </div>
+                            <div class="help-window" id="help-window-{{ i }}">
+                                <button class="help-window-button" id="generate-button-{{ i }}" name="generate" value="generate">Generate</button>
+                              <button class="help-window-button">Complete</button>
+                              <button class="help-window-button">Rephrase</button>
+                                <br>
+                                <br>
+                              <button class="save-button help-window-button" id="save-{{ i }}" style="margin: 0 auto; background-color: #4CAF50;
+                              width: 10%; align-items: center;">Save</button>
+                                <button class="close-button help-window-button" id="close-{{ i }}" style="margin: 0 auto; background-color: indianred;
+                              width: 10%; align-items: center;">Close</button>
+                            </div>
+                            </div>
+                    {% else %}
+                        <div id="main-div-{{ i }}" style="display: none">
+                            <div style="display: flex;">
+                              <button class="help-button" id="help-button-{{ i }}">edit</button>
+                              <input disabled rows="1" class="form-control text-song" name="text" id="song-text-{{ i }}">{{ generated_text }}</input>
+                            </div>
+                            <div class="help-window" id="help-window-{{ i }}">
+                                <button class="help-window-button" id="generate-button-{{ i }}" name="generate" value="generate">Generate</button>
+                              <button class="help-window-button">Complete</button>
+                              <button class="help-window-button">Rephrase</button>
+                                <br>
+                                <br>
+                              <button class="save-button help-window-button" id="save-{{ i }}" style="margin: 0 auto; background-color: #4CAF50;
+                              width: 10%; align-items: center;">Save</button>
+                                <button class="close-button help-window-button" id="close-{{ i }}" style="margin: 0 auto; background-color: indianred;
+                              width: 10%; align-items: center;">Close</button>
+                            </div>
+                            </div>
+                    {% endif %}
                 {% endif %}
             <script>
               $("#help-button-{{ i }}").on("click", function(event) {
@@ -105,7 +129,7 @@
 {#            }#}
 {#            });#}
 {#    </script>#}
-    {% for i in range(9) %}
+    {% for i in range(99) %}
         <script>
             $('#save-{{ i }}').on("click", function() {
                 $("#help-window-{{ i }}").hide();
