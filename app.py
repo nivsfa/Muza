@@ -20,10 +20,8 @@ songs_names = list(map(lambda x: x[0], songs_names))
 id2name = {k: v for v, k in songs_list}
 name2id = {k: v for k, v in songs_list}
 songs_text = cur.execute("SELECT l.song_id, l.line_num, l.line from line l").fetchall()
-songs = {}
+songs = {k: [] for k in songs_names}
 for line in songs_text:
-    if id2name[line[0]] not in songs.keys():
-        songs[id2name[line[0]]] = []
     songs[id2name[line[0]]].append((line[1], line[2]))
 
 
@@ -69,28 +67,37 @@ def add_new_song():
 
 @app.route('/generate')
 def generate():
-    song_id = cur.execute("SELECT p.last_song_id from parameters p").fetchall()[0][0]
-    line_num = int(request.args.get("line_num"))
-    lyrics = cur.execute("SELECT l.line from line l where l.song_id=?", str(song_id)).fetchall()
-    print(lyrics)
-    if line_num < len(lyrics):
-        lyrics.pop(line_num)
-    lyrics = '\n'.join(list(map(lambda x: x[0], lyrics)))
-    generate_prompt = f'", generate a lyric line right before the {line_num} line. Make it rhyme, and make it start ' \
-                      f'with the first word of {line_num} line." '
+    # song_id = cur.execute("SELECT p.last_song_id from parameters p").fetchall()[0][0]
+    # line_num = int(request.args.get("line_num"))
+    # lyrics = cur.execute("SELECT l.line from line l where l.song_id=?", str(song_id)).fetchall()
+    # lyrics = lyrics[line_num-1:line_num+1]
+    # lyrics.pop(1)
+    # lyrics = '\n'.join(list(map(lambda x: x[0], lyrics)))
+    # generate_prompt = f'", generate a new line between these two lines. Make it rhyme, and make it start ' \
+    #                   f'with the first word of the first line." '
+    #
+    # prompt = 'Given the song "' \
+    #          + lyrics + \
+    #          generate_prompt
+    # completions = openai.Completion.create(
+    #     engine=model_engine,
+    #     prompt=prompt,
+    #     max_tokens=15,
+    #     n=1,
+    #     stop=None,
+    #     temperature=0.5,
+    # )
+    return jsonify(text="And if you want these kind of dreams, it's Californication")
 
-    prompt = 'Given the song "' \
-             + lyrics + \
-             generate_prompt
-    completions = openai.Completion.create(
-        engine=model_engine,
-        prompt=prompt,
-        max_tokens=30,
-        n=1,
-        stop=None,
-        temperature=0.5,
-    )
-    return jsonify(text=f"{completions.choices[0].text}")
+
+@app.route('/complete')
+def complete():
+    return jsonify(text="And if you want to eat a fish, it's free in every nation")
+
+
+@app.route('/rephrase')
+def rephrase():
+    return jsonify(text="And if you want to dream like this, it's USA-ization")
 
 
 @app.route('/upload_line')

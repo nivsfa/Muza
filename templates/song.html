@@ -38,14 +38,14 @@
     <div class="v1_145 col-sm" style="overflow-y:scroll;">
         {% for i in range(100) %}
 {#            {% song_name = song_name|string %}#}
-                {% if i == 0 %}
+                {% if i == songs[song_name]|length %}
                     <div id="main-div-0">
                         <div style="display: flex;">
                           <button class="help-button" id="help-button-{{ i }}">edit</button>
                             {% if i < songs[song_name]|length %}
-                                <input disabled rows="1" class="form-control text-song" name="text" id="song-text-{{ i }}" value="{{ songs[song_name][i][1] }}">
+                                <input rows="1" class="form-control text-song" name="text" id="song-text-{{ i }}" value="{{ songs[song_name][i][1] }}">
                             {% else %}
-                                <input disabled rows="1" class="form-control text-song" name="text" id="song-text-{{ i }}" value="{{ generated_text }}">
+                                <input rows="1" class="form-control text-song" name="text" id="song-text-{{ i }}" value="{{ generated_text }}">
                             {% endif %}
                         </div>
                         <div class="help-window" id="help-window-{{ i }}">
@@ -69,8 +69,8 @@
                             </div>
                             <div class="help-window" id="help-window-{{ i }}">
                                 <button class="help-window-button" id="generate-button-{{ i }}" name="generate" value="generate">Generate</button>
-                              <button class="help-window-button">Complete</button>
-                              <button class="help-window-button">Rephrase</button>
+                              <button class="help-window-button" id="complete-button-{{ i }}">Complete</button>
+                              <button class="help-window-button" id="rephrase-button-{{ i }}">Rephrase</button>
                                 <br>
                                 <br>
                               <button class="save-button help-window-button" id="save-{{ i }}" style="margin: 0 auto; background-color: #4CAF50;
@@ -87,8 +87,8 @@
                             </div>
                             <div class="help-window" id="help-window-{{ i }}">
                                 <button class="help-window-button" id="generate-button-{{ i }}" name="generate" value="generate">Generate</button>
-                              <button class="help-window-button">Complete</button>
-                              <button class="help-window-button">Rephrase</button>
+                              <button class="help-window-button" id="complete-button-{{ i }}">Complete</button>
+                              <button class="help-window-button" id="rephrase-button-{{ i }}">Rephrase</button>
                                 <br>
                                 <br>
                               <button class="save-button help-window-button" id="save-{{ i }}" style="margin: 0 auto; background-color: #4CAF50;
@@ -110,6 +110,7 @@
             <script>
               $("#close-{{ i }}").on("click", function(event) {
                 $("#help-window-{{ i }}").hide();
+                $("#song-text-{{ i }}").attr("disabled", "disabled");
               });
             </script>
             <script>
@@ -118,6 +119,26 @@
                 // Use jQuery's $.get method to make a GET request to the Flask app
                 var song_name = $(this).data("song_name");
                 $.get("/generate", {song_name: song_name, line_num:{{ i }}},function(data) {
+                  // Append the returned text to the generated-text div
+                  $("#song-text-{{ i }}").val(data.text);
+                });
+              });
+
+            $("#complete-button-{{ i }}").on("click", function() {
+                event.preventDefault();
+                // Use jQuery's $.get method to make a GET request to the Flask app
+                var song_name = $(this).data("song_name");
+                $.get("/complete", {song_name: song_name, line_num:{{ i }}},function(data) {
+                  // Append the returned text to the generated-text div
+                  $("#song-text-{{ i }}").val(data.text);
+                });
+              });
+
+            $("#rephrase-button-{{ i }}").on("click", function() {
+                event.preventDefault();
+                // Use jQuery's $.get method to make a GET request to the Flask app
+                var song_name = $(this).data("song_name");
+                $.get("/rephrase", {song_name: song_name, line_num:{{ i }}},function(data) {
                   // Append the returned text to the generated-text div
                   $("#song-text-{{ i }}").val(data.text);
                 });

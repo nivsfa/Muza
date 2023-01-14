@@ -45,7 +45,8 @@
     </div>
     <span class="v1_22">Muza</span>
     <span class="v1_23">Your personal AI assisted song notebook</span>
-    <span class="v1_24">My Songs:
+    <span class="v1_24">
+        My Songs:
         <ul>
             {% for song_name in songs %}
             <li><a href="{{ url_for('song', song_name=song_name) }}">{{ song_name }}</a></li>

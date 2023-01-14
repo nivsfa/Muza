@@ -82,13 +82,13 @@ body {
   width: 72px;
   color: rgba(0,0,0,1);
   position: absolute;
-  top: 143px;
+  top: 100px;
   left: 150px;
   font-family: Inter;
   font-weight: Bold;
   font-size: 14px;
   opacity: 1;
-  text-align: center;
+  text-align: left;
 }
 .v1_249 {
   width: 492px;
