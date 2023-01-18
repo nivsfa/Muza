@@ -10,8 +10,9 @@ openai.api_key = "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"
 app = Flask(__name__, template_folder='templates', static_folder='static')
 
 model_engine = "text-davinci-002"
+# model_engine = 'text-ada-001'
 songs = {}
-conn = sqlite3.connect('muza_database.sqlite',  check_same_thread=False)
+conn = sqlite3.connect('muza_database.sqlite', check_same_thread=False)
 cur = conn.cursor()
 
 songs_list = cur.execute("SELECT s.title, s.id from song s").fetchall()
@@ -35,6 +36,24 @@ def add_song_record(title, genre, inspiration):
     name2id[title] = id
     id2name[id] = title
     songs[title] = []
+
+
+def get_prompt_parameters():
+    song_id = cur.execute("SELECT p.last_song_id from parameters p").fetchall()[0][0]
+    line_num = int(request.args.get("line_num"))
+    words_num = int(request.args.get("words_num"))
+    add_words_num = request.args.get("add_words_num")
+    add_max_words = request.args.get("add_max_words")
+    max_words = int(request.args.get("max_words"))
+    uniqueness = request.args.get("uniqueness")
+    rhyme = request.args.get("rhyme")
+    add_emotion = request.args.get("add_emotion")
+    emotion = request.args.get("emotion")
+    lyrics = cur.execute("SELECT l.line from line l where l.song_id=?", str(song_id)).fetchall()
+    genre, inspiration, title = cur.execute("SELECT s.genre, s.inspiration, s.title from song s where s.id=?",
+                                            str(song_id)).fetchall()[0]
+    return song_id, line_num, words_num, add_words_num, add_max_words, max_words, uniqueness, rhyme, add_emotion, emotion, lyrics, \
+           genre, inspiration, title
 
 
 def add_line_song_record(title, line_num, words_num, max_words_num, uniqueness, rhyme, emotion):
@@ -70,9 +89,31 @@ def add_new_song():
 
 @app.route('/generate')
 def generate():
-    # song_id = cur.execute("SELECT p.last_song_id from parameters p").fetchall()[0][0]
-    # line_num = int(request.args.get("line_num"))
-    # lyrics = cur.execute("SELECT l.line from line l where l.song_id=?", str(song_id)).fetchall()
+    song_id, line_num, words_num, add_words_num, add_max_words, max_words, uniqueness, rhyme, add_emotion, emotion, \
+    lyrics, genre, inspiration, title = get_prompt_parameters()
+    lyrics.pop(line_num)
+    lyrics = '\n'.join(list(map(lambda x: x[0], lyrics)))
+    print(add_words_num)
+
+    number_of_words = '' if add_words_num != 'on' else f' with {words_num} words,'
+    max_number_of_words = max_words if add_max_words == 'on' and add_words_num != 'on' else 15
+    rhyme = '' if rhyme != 'on' else ' make it rhyme,'
+    rhyme = ' make it rhyme,'
+    emotion = '' if add_emotion != 'on' else f' make it {emotion},'
+    genre = '' if genre == 'Enter genre' or genre == 'Undetermined' else f' make it with {genre} genre'
+    first_or_new = 'the first' if len(lyrics) == 0 else 'one'
+    add_line = f'for a song with the "{title}" title' if len(lyrics) == 0 \
+        else f"between line {line_num} and {line_num + 1} in the following song: \n{lyrics}"
+
+    if len(lyrics) == 0:
+        prompt = ""
+    else:
+        prompt = f"Given the following song, generate one line between line {line_num} and {line_num+1}," \
+                 f"{number_of_words}{rhyme}{emotion}{genre}:\n" \
+                 f'"{lyrics}"'
+
+    print(prompt)
+
     # lyrics = lyrics[line_num-1:line_num+1]
     # lyrics.pop(1)
     # lyrics = '\n'.join(list(map(lambda x: x[0], lyrics)))
@@ -82,24 +123,33 @@ def generate():
     # prompt = 'Given the song "' \
     #          + lyrics + \
     #          generate_prompt
-    # completions = openai.Completion.create(
-    #     engine=model_engine,
-    #     prompt=prompt,
-    #     max_tokens=15,
-    #     n=1,
-    #     stop=None,
-    #     temperature=0.5,
-    # )
-    return jsonify(text="And if you want these kind of dreams, it's Californication")
+    print(max_number_of_words)
+    print(float(uniqueness))
+    completions = openai.Completion.create(
+        engine=model_engine,
+        prompt=prompt,
+        max_tokens=100,
+        n=1,
+        stop=None,
+        temperature=float(uniqueness),
+    )
+    # return jsonify(text='generate')
+    return jsonify(text=completions.choices[0].text)
 
 
 @app.route('/complete')
 def complete():
+    song_id, line_num, words_num, add_words_num, add_max_words, max_words, uniqueness, rhyme, add_emotion, emotion, \
+    lyrics, genre, inspiration, title = get_prompt_parameters()
+    lyrics = '\n'.join(list(map(lambda x: x[0], lyrics)))
     return jsonify(text="And if you want to eat a fish, it's free in every nation")
 
 
 @app.route('/rephrase')
 def rephrase():
+    song_id, line_num, words_num, add_words_num, add_max_words, max_words, uniqueness, rhyme, add_emotion, emotion, \
+    lyrics, genre, inspiration, title = get_prompt_parameters()
+    lyrics = '\n'.join(list(map(lambda x: x[0], lyrics)))
     return jsonify(text="And if you want to dream like this, it's USA-ization")
 
 
@@ -131,6 +181,7 @@ def song(song_name):
             songs[new_song_name] = ''
             return redirect(url_for('song', song_name=new_song_name))
     return render_template('song.html', song_name=song_name, text=songs[song_name], songs=songs)
+
 
 # @app.route('/song/<song_title>', methods=['GET', 'POST'])
 # def song(song_title):
