@@ -9,7 +9,7 @@ openai.api_key = "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"
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
 
-model_engine = "text-davinci-002"
+model_engine = "text-davinci-003"
 # model_engine = 'text-ada-001'
 songs = {}
 conn = sqlite3.connect('muza_database.sqlite', check_same_thread=False)
@@ -93,18 +93,11 @@ def generate():
     lyrics, genre, inspiration, title = get_prompt_parameters()
     lyrics.pop(line_num)
     lyrics = '\n'.join(list(map(lambda x: x[0], lyrics)))
-    print(add_words_num)
-
-    number_of_words = '' if add_words_num != 'on' else f' with {words_num} words,'
-    max_number_of_words = max_words if add_max_words == 'on' and add_words_num != 'on' else 15
-    rhyme = '' if rhyme != 'on' else ' make it rhyme,'
-    rhyme = ' make it rhyme,'
-    emotion = '' if add_emotion != 'on' else f' make it {emotion},'
+    number_of_words = '' if add_words_num == 'false' else f' with {words_num} words,'
+    max_number_of_words = max_words if add_max_words == 'true' and add_words_num == 'false' else 15
+    rhyme = '' if rhyme == 'false' else ' make it rhyme,'
+    emotion = '' if add_emotion == 'false' else f' make it {emotion},'
     genre = '' if genre == 'Enter genre' or genre == 'Undetermined' else f' make it with {genre} genre'
-    first_or_new = 'the first' if len(lyrics) == 0 else 'one'
-    add_line = f'for a song with the "{title}" title' if len(lyrics) == 0 \
-        else f"between line {line_num} and {line_num + 1} in the following song: \n{lyrics}"
-
     if len(lyrics) == 0:
         prompt = ""
     else:
