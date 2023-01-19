@@ -41,7 +41,6 @@ def add_song_record(title, genre, inspiration):
 def get_prompt_parameters():
     song_id = cur.execute("SELECT p.last_song_id from parameters p").fetchall()[0][0]
     line_num = int(request.args.get("line_num"))
-    words_num = int(request.args.get("words_num"))
     add_words_num = request.args.get("add_words_num")
     add_max_words = request.args.get("add_max_words")
     max_words = int(request.args.get("max_words"))
@@ -52,7 +51,7 @@ def get_prompt_parameters():
     lyrics = cur.execute("SELECT l.line from line l where l.song_id=?", str(song_id)).fetchall()
     genre, inspiration, title = cur.execute("SELECT s.genre, s.inspiration, s.title from song s where s.id=?",
                                             str(song_id)).fetchall()[0]
-    return song_id, line_num, words_num, add_words_num, add_max_words, max_words, uniqueness, rhyme, add_emotion, emotion, lyrics, \
+    return song_id, line_num, add_words_num, add_max_words, max_words, uniqueness, rhyme, add_emotion, emotion, lyrics, \
            genre, inspiration, title
 
 
@@ -73,6 +72,10 @@ def index():
 @app.route('/add_new_song', methods=['GET', 'POST'])
 def add_new_song():
     if request.method == 'POST':
+        print(request.form)
+        if "add_song_button" in request.form:
+            return render_template('add_new_song.html', songs=songs)
+
         # Get the song name from the form
         song_name = request.form['song_name']
         genre = request.form['genre']
@@ -89,35 +92,31 @@ def add_new_song():
 
 @app.route('/generate')
 def generate():
-    song_id, line_num, words_num, add_words_num, add_max_words, max_words, uniqueness, rhyme, add_emotion, emotion, \
+    song_id, line_num, add_words_num, add_max_words, max_words, uniqueness, rhyme, add_emotion, emotion, \
     lyrics, genre, inspiration, title = get_prompt_parameters()
     lyrics.pop(line_num)
     lyrics = '\n'.join(list(map(lambda x: x[0], lyrics)))
-    number_of_words = '' if add_words_num == 'false' else f' with {words_num} words,'
     max_number_of_words = max_words if add_max_words == 'true' and add_words_num == 'false' else 15
+    max_number_of_words = f' with {max_number_of_words} words at most,'
     rhyme = '' if rhyme == 'false' else ' make it rhyme,'
     emotion = '' if add_emotion == 'false' else f' make it {emotion},'
     genre = '' if genre == 'Enter genre' or genre == 'Undetermined' else f' make it with {genre} genre'
     if len(lyrics) == 0:
-        prompt = ""
+        prompt = f"Generate the first line in a song," \
+                 f"{max_number_of_words}{rhyme}{emotion}{genre}"
+    elif line_num == 0:
+        prompt = f"Given the following song, generate the first line," \
+                 f"{max_number_of_words}{rhyme}{emotion}{genre}\n" \
+                 f'"{lyrics}"'
+    elif len(lyrics) == line_num:
+        prompt = f"Given the following song, generate a one line at the end of the song," \
+                 f"{max_number_of_words}{rhyme}{emotion}{genre}:\n" \
+                 f'"{lyrics}"'
     else:
         prompt = f"Given the following song, generate one line between line {line_num} and {line_num+1}," \
-                 f"{number_of_words}{rhyme}{emotion}{genre}:\n" \
+                 f"{rhyme}{emotion}{genre}:\n" \
                  f'"{lyrics}"'
-
     print(prompt)
-
-    # lyrics = lyrics[line_num-1:line_num+1]
-    # lyrics.pop(1)
-    # lyrics = '\n'.join(list(map(lambda x: x[0], lyrics)))
-    # generate_prompt = f'", generate a new line between these two lines. Make it rhyme, and make it start ' \
-    #                   f'with the first word of the first line." '
-    #
-    # prompt = 'Given the song "' \
-    #          + lyrics + \
-    #          generate_prompt
-    print(max_number_of_words)
-    print(float(uniqueness))
     completions = openai.Completion.create(
         engine=model_engine,
         prompt=prompt,
@@ -152,11 +151,20 @@ def upload_line(line, line_id, song_title):
     return jsonify(text=f"This is the generated text. {i}")
 
 
+@app.route('/save_row')
+def save_row():
+    line_text = int(request.args.get("line_text"))
+    song_id = cur.execute("SELECT p.last_song_id from parameters p").fetchall()[0][0]
+    cur.execute("UPDATE line SET line = ? WHERE song_id = ?", (line_text, song_id))
+
+
 @app.route('/song/<song_name>', methods=['GET', 'POST'])
 def song(song_name):
     cur.execute("UPDATE parameters SET last_song_id =? WHERE id = 1", (name2id[song_name],))
     conn.commit()
     if request.method == 'POST':
+        if "add_song_button" in request.form:
+            return redirect(url_for('add_new_song'))
         # if request.form.get("generate"):
         #     generated_text = 'generated text'  # function that returns the generated text
         #     return render_template('song.html', generated_text=generated_text,
@@ -173,19 +181,8 @@ def song(song_name):
             new_song_name = request.form['song_name']
             songs[new_song_name] = ''
             return redirect(url_for('song', song_name=new_song_name))
+
     return render_template('song.html', song_name=song_name, text=songs[song_name], songs=songs)
-
-
-# @app.route('/song/<song_title>', methods=['GET', 'POST'])
-# def song(song_title):
-#     # Render the song page with the song title, genre, and inspiration
-#     return render_template('song.html', song_title=song_title)
-
-# @app.route('/song/<song_name>/add-line', methods=['POST'])
-# def add_line(song_name):
-#     line = request.form['line']
-#     # Save the line to a variable here
-#     return 'Success'
 
 
 if __name__ == '__main__':
