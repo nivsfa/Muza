@@ -12,25 +12,6 @@
 <div class="v1_17">
     <div class="v1_2"></div>
     <div class="v1_8">
-        <b>AI Settings:</b> <br> <br>
-        <input type="checkbox" id="words-num"><label for="words-num-input">number of words in line:</label>
-        <br><input disabled id="words-num-input" type="number" value="10" min="1" max="15" class="form-control"> <br>
-        <input checked type="checkbox" id="max-words-num"><label for="max-words-num-input">max number of words in line:</label>
-        <br><input id="max-words-num-input" type="number" value="10" min="1" max="15" class="form-control">
-        <br><label for="uniqueness">uniqueness</label>
-        <input type="range" style="color: aliceblue" id="uniqueness" name="volume" min="0" max="1" step="0.1"><br>
-        <input checked type="checkbox" id="rhyme"><label for="rhyme">make it rhyme</label> <br>
-        <br><input type="checkbox" id="emotion-check"><label for="emotion">emotion:</label>
-            <select disabled class="form-control" name="emotion" id="emotion">
-                <option value="happiness">Happiness</option>
-              <option value="sadness">Sadness</option>
-              <option value="fear">Fear</option>
-              <option value="anger">Anger</option>
-                <option value="surprise">Surprise</option>
-              <option value="disgust">Disgust</option>
-            </select>
-        <br><button class="save-button help-window-button" id="save" style="margin: 0 auto; background-color: #4CAF50;
-                          width: 50%; align-items: center;">Save</button>
     </div>
     <div class="v1_3">
 
@@ -39,7 +20,7 @@
     <span class="v1_5">Your personal AI assisted song notebook</span>
     <span class="v1_7">
         <form id="add_song_form" method="post">
-            <button href="{{ url_for('add_new_song') }}" type="submit" style="background-color:#FF6433;" class="btn btn-primary btn-lg">Add New Song</button>
+            <button href="{{ url_for('add_new_song') }}" type="submit" style="background-color:#4CAF50;" class="btn btn-primary btn-lg">Add New Song</button>
         </form>
     </span>
     <span class="v1_6">My Songs:

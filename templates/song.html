@@ -5,8 +5,14 @@
     <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet"/>
 {#    <link rel="stylesheet" href="{{ url_for('static', filename='css/main_song.css') }}">#}
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/bootstrap.tagsinput/0.8.0/bootstrap-tagsinput.css">
+<script src="https://cdn.jsdelivr.net/bootstrap.tagsinput/0.8.0/bootstrap-tagsinput.min.js"></script>
+    <script>
+    $('#ending-words-input').tagsinput();
+</script>
 <head style="background: linear-gradient(to right, #517DF0 50%, white 50%); height: 100%;">
     <title>Document</title></head>
 <body style="background: linear-gradient(to right, #517DF0 50%, white 50%); height: 100%;">
@@ -20,15 +26,15 @@
 
 <form id="add_song_form" method="post">
             <input hidden name="clicked" value="checked">
-            <button name="add_song_button" href="{{ url_for('add_new_song') }}" type="submit" style="background-color:#FF6433;" class="btn btn-primary btn-lg">Add New Song</button>
+            <button name="add_song_button" href="{{ url_for('add_new_song') }}" type="submit" style="background-color:#4CAF50;" class="btn btn-primary btn-lg">Add New Song</button>
         </form>
     </div>
     <div class="v1_149">
-        <b>AI Settings:</b> <br> <br>
-        <input type="checkbox" id="words-num"><label for="words-num-input">number of words in line:</label>
-        <br><input disabled id="words-num-input" type="number" value="10" min="1" max="15" class="form-control"> <br>
-        <input checked type="checkbox" id="max-words-num"><label for="max-words-num-input">max number of words in line:</label>
-        <br><input id="max-words-num-input" type="number" value="10" min="1" max="15" class="form-control">
+        <b style="color:#517DF0; font-size: 20px;">AI Settings</b> <br> <br>
+        <label for="ending-words-input">ending words:</label>
+        <br><input type="text" id="ending-words-input" data-role="tagsinput" class="form-control"> <br><br>
+        <label for="line-key-words-input">keywords in a line:</label>
+        <br><input id="line-key-words-input" type="text" data-role="tagsinput" class="form-control"><br>
         <br><label for="uniqueness">uniqueness</label>
         <input type="range" style="color: aliceblue" id="uniqueness" name="volume" min="0" max="1" step="0.1"><br>
         <input checked type="checkbox" id="rhyme"><label for="rhyme">make it rhyme</label> <br>
@@ -41,16 +47,90 @@
                 <option value="surprise">Surprise</option>
               <option value="disgust">Disgust</option>
             </select>
-        <br><button class="save-button help-window-button" id="save" style="margin: 0 auto; background-color: #4CAF50;
-                          width: 50%; align-items: center;">Save</button>
     </div>
     <div class="v1_145 col-sm" style="overflow-y:scroll;">
+    <h2 style="padding-left: 350px; color: #245DEC; font-family: Inter;">
+        <button style="background-color: white;" class="help-button" id="help-button-title">
+                              <img style="width: 20px; height: 20px" src="{{ url_for('static', filename='images/edit_icon.png') }}" alt="icon"></button>
+        {{song_name}}
+
+    </h2>
+    <div class="help-window" id="help-window-title" style="background-color: white">
+        <b style="color: #245DEC">new title:</b> <input style="width: 400px" class="form-control">
+                            <button style="margin: 20px; color: white; background-color: #245DEC" class="help-window-button" id="generate-button-title" name="generate" value="generate">Generate</button>
+                              <button style="margin: 20px; color: white; background-color: #245DEC" class="help-window-button" id="rephrase-button-title">Rephrase</button>
+                            <br>
+                            <br>
+                          <button class="save-button help-window-button" id="save-title" style="margin: 0 auto; background-color: #4CAF50;
+                          width: 10%; align-items: center;">Save</button>
+                            <button class="close-button help-window-button" id="close-title" style="margin: 0 auto; background-color: indianred;
+                          width: 10%; align-items: center;">Close</button>
+                        </div>
+    <script>
+              $("#help-button-title").on("click", function(event) {
+                event.preventDefault();
+                $("#help-window-title").show();
+              });
+            </script>
+            <script>
+              $("#close-title").on("click", function(event) {
+                $("#help-window-title").hide();
+              });
+            </script>
+            <script>
+            $("#generate-button-{{ i }}").on("click", function() {
+                event.preventDefault();
+                // Use jQuery's $.get method to make a GET request to the Flask app
+                var song_name = $(this).data("song_name");
+                $.get("/generate", {song_name: song_name, line_num:{{ i }},
+                        ending_words: $("#ending-words-input").val(),
+                        keywords: $("#line-key-words-input").val(),
+                        uniqueness: $("#uniqueness").val(),
+                        rhyme: $("#rhyme").prop('checked'),
+                        add_emotion: $("#emotion-check").prop('checked'), emotion: $("#emotion").val()}
+                    ,function(data) {
+                  // Append the returned text to the generated-text div
+                  $("#song-text-{{ i }}").val(data.text);
+                });
+              });
+
+            $("#complete-button-{{ i }}").on("click", function() {
+                event.preventDefault();
+                // Use jQuery's $.get method to make a GET request to the Flask app
+                var song_name = $(this).data("song_name");
+                $.get("/complete", {song_name: song_name, line_num:{{ i }},
+                        ending_words: $("#ending-words-input").val(),
+                        keywords: $("#line-key-words-input").val(),
+                        uniqueness: $("#uniqueness").val(),
+                        rhyme: $("#rhyme").prop('checked'),
+                        add_emotion: $("#emotion-check").prop('checked'), emotion: $("#emotion").val()},function(data) {
+                  // Append the returned text to the generated-text div
+                  $("#song-text-{{ i }}").val(data.text);
+                });
+              });
+
+            $("#rephrase-button-{{ i }}").on("click", function() {
+                event.preventDefault();
+                // Use jQuery's $.get method to make a GET request to the Flask app
+                var song_name = $(this).data("song_name");
+                $.get("/rephrase", {song_name: song_name, line_num:{{ i }},
+                        ending_words: $("#ending-words-input").val(),
+                        keywords: $("#line-key-words-input").val(),
+                        uniqueness: $("#uniqueness").val(),
+                        rhyme: $("#rhyme").prop('checked'),
+                        add_emotion: $("#emotion-check").prop('checked'), emotion: $("#emotion").val()},function(data) {
+                  // Append the returned text to the generated-text div
+                  $("#song-text-{{ i }}").val(data.text);
+                });
+              });
+            </script>
         {% for i in range(100) %}
 {#            {% song_name = song_name|string %}#}
                 {% if i == songs[song_name]|length %}
                     <div id="main-div-{{ i }}">
                         <div style="display: flex;">
-                          <button class="help-button" id="help-button-{{ i }}">edit</button>
+                          <button style="background-color: white;" class="help-button" id="help-button-{{ i }}">
+                              <img style="width: 10px; height: 10px" src="{{ url_for('static', filename='images/edit_icon.png') }}" alt="icon"></button>
                             {% if i < songs[song_name]|length %}
                                 <input rows="1" class="form-control text-song" name="text" id="song-text-{{ i }}" value="{{ songs[song_name][i][1] }}">
                             {% else %}
@@ -59,8 +139,8 @@
                         </div>
                         <div class="help-window" id="help-window-{{ i }}">
                             <button class="help-window-button" id="generate-button-{{ i }}" name="generate" value="generate">Generate</button>
-                          <button class="help-window-button">Complete</button>
-                          <button class="help-window-button">Rephrase</button>
+                          <button class="help-window-button" id="complete-button-{{ i }}">Complete</button>
+                              <button class="help-window-button" id="rephrase-button-{{ i }}">Rephrase</button>
                             <br>
                             <br>
                           <button class="save-button help-window-button" id="save-{{ i }}" style="margin: 0 auto; background-color: #4CAF50;
@@ -73,7 +153,7 @@
                     {% if i < songs[song_name]|length %}
                         <div id="main-div-{{ i }}" style="display: block">
                             <div style="display: flex;">
-                              <button class="help-button" id="help-button-{{ i }}">edit</button>
+                              <button style="background-color: white;" class="help-button" id="help-button-{{ i }}"><img style="width: 10px; height: 10px" src="{{ url_for('static', filename='images/edit_icon.png') }}" alt="icon"></button>
                               <input disabled rows="1" class="form-control text-song" name="text" id="song-text-{{ i }}" value="{{ songs[song_name][i][1] }}">
                             </div>
                             <div class="help-window" id="help-window-{{ i }}">
@@ -91,8 +171,8 @@
                     {% else %}
                         <div id="main-div-{{ i }}" style="display: none">
                             <div style="display: flex;">
-                              <button class="help-button" id="help-button-{{ i }}">edit</button>
-                              <input disabled rows="1" class="form-control text-song" name="text" id="song-text-{{ i }}">{{ generated_text }}</input>
+                              <button style="background-color: white;" class="help-button" id="help-button-{{ i }}"><img style="width: 10px; height: 10px" src="{{ url_for('static', filename='images/edit_icon.png') }}" alt="icon"></button>
+                              <input rows="1" class="form-control text-song" name="text" id="song-text-{{ i }}">{{ generated_text }}</input>
                             </div>
                             <div class="help-window" id="help-window-{{ i }}">
                                 <button class="help-window-button" id="generate-button-{{ i }}" name="generate" value="generate">Generate</button>
@@ -127,8 +207,8 @@
                 // Use jQuery's $.get method to make a GET request to the Flask app
                 var song_name = $(this).data("song_name");
                 $.get("/generate", {song_name: song_name, line_num:{{ i }},
-                        add_words_num: $("#words-num").prop('checked'), words_num: $("#words-num-input").val(),
-                        add_max_words: $("#max-words-num").prop('checked'), max_words: $("#max-words-num-input").val(),
+                        ending_words: $("#ending-words-input").val(),
+                        keywords: $("#line-key-words-input").val(),
                         uniqueness: $("#uniqueness").val(),
                         rhyme: $("#rhyme").prop('checked'),
                         add_emotion: $("#emotion-check").prop('checked'), emotion: $("#emotion").val()}
@@ -143,10 +223,10 @@
                 // Use jQuery's $.get method to make a GET request to the Flask app
                 var song_name = $(this).data("song_name");
                 $.get("/complete", {song_name: song_name, line_num:{{ i }},
-                        add_words_num: $("#words-num").prop('checked'), words_num: $("#words-num-input").val(),
-                        add_max_words: $("#max-words-num").prop('checked'), max_words: $("#max-words-num-input").val(),
+                        ending_words: $("#ending-words-input").val(),
+                        keywords: $("#line-key-words-input").val(),
                         uniqueness: $("#uniqueness").val(),
-                        rhyme: $("#rhyme").val(),
+                        rhyme: $("#rhyme").prop('checked'),
                         add_emotion: $("#emotion-check").prop('checked'), emotion: $("#emotion").val()},function(data) {
                   // Append the returned text to the generated-text div
                   $("#song-text-{{ i }}").val(data.text);
@@ -158,11 +238,11 @@
                 // Use jQuery's $.get method to make a GET request to the Flask app
                 var song_name = $(this).data("song_name");
                 $.get("/rephrase", {song_name: song_name, line_num:{{ i }},
-                        add_words_num: $("#words-num").val(), words_num: $("#words-num-input").val(),
-                        add_max_words: $("#max-words-num").val(), max_words: $("#max-words-num-input").val(),
+                        ending_words: $("#ending-words-input").val(),
+                        keywords: $("#line-key-words-input").val(),
                         uniqueness: $("#uniqueness").val(),
-                        rhyme: $("#rhyme").val(),
-                        add_emotion: $("#emotion-check").val(), emotion: $("#emotion").val()},function(data) {
+                        rhyme: $("#rhyme").prop('checked'),
+                        add_emotion: $("#emotion-check").prop('checked'), emotion: $("#emotion").val()},function(data) {
                   // Append the returned text to the generated-text div
                   $("#song-text-{{ i }}").val(data.text);
                 });
@@ -180,7 +260,8 @@
     {% for i in range(99) %}
         <script>
             $('#save-{{ i }}').on("click", function() {
-                {#$.get("/save_row", {line_text: $("#song-text-{{ i }}").val(data.text)});#}
+                event.preventDefault();
+                $.get("/save_row", {line_text: $("#song-text-{{ i }}").val(), line_num:{{ i }}});
                 $("#help-window-{{ i }}").hide();
                 $("#song-text-{{ i }}").attr("disabled", "disabled");
                 $("#main-div-{{ i + 1 }}").show();
@@ -225,26 +306,6 @@
 
     <script>
         $(document).ready(function() {
-            var the_terms = $("#words-num");
-
-            the_terms.click(function() {
-                if ($(this).is(":checked")) {
-                    $("#words-num-input").removeAttr("disabled");
-                } else {
-                    $("#words-num-input").attr("disabled", "disabled");
-                }
-            });
-
-            var the_terms = $("#max-words-num");
-
-            the_terms.click(function() {
-                if ($(this).is(":checked")) {
-                    $("#max-words-num-input").removeAttr("disabled");
-                } else {
-                    $("#max-words-num-input").attr("disabled", "disabled");
-                }
-            });
-
             var the_terms = $("#emotion-check");
 
             the_terms.click(function() {
@@ -256,7 +317,25 @@
             });
         });
     </script>
+<script>
+var cities = new Bloodhound({
+  datumTokenizer: Bloodhound.tokenizers.obj.whitespace('text'),
+  queryTokenizer: Bloodhound.tokenizers.whitespace,
+  prefetch: 'assets/cities.json'
+});
+cities.initialize();
 
+var elt = $('input');
+elt.tagsinput({
+  itemValue: 'value',
+  itemText: 'text',
+  typeaheadjs: {
+    name: 'cities',
+    displayKey: 'text',
+    source: cities.ttAdapter()
+  }
+});
+</script>
 {#<script>#}
 {#    var counter = 0;#}
 {#    $(document).ready(function(){#}
@@ -466,6 +545,12 @@ a:link, a:visited {
   border: 1px solid rgba(0,0,0,1);
   overflow: hidden;
 }
+
+.form-control:disabled{
+    background: #DAEAFE;
+    border: 1px solid white;
+}
+
 
 
 </style>
