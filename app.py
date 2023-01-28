@@ -4,7 +4,7 @@ import sqlite3
 import openai
 
 # Set the API key
-openai.api_key = "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"
+openai.api_key = ""
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
 
@@ -43,7 +43,10 @@ def add_song_record(title, genre, inspiration):
 
 def get_prompt_parameters():
     song_id = cur.execute("SELECT p.last_song_id from parameters p").fetchall()[0][0]
-    line_num = int(request.args.get("line_num"))
+    try:
+        line_num = int(request.args.get("line_num"))
+    except:
+        line_num=0
     ending_words = request.args.get("ending_words")
     keywords = request.args.get("keywords")
     uniqueness = request.args.get("uniqueness")
@@ -56,6 +59,7 @@ def get_prompt_parameters():
     rhyme = '' if rhyme == 'false' else ' make it rhyme,'
     emotion = '' if add_emotion == 'false' else f' make it {emotion},'
     genre = '' if genre == 'Enter genre' or genre == 'Undetermined' else f' make it with {genre} genre'
+    inspiration = '' if genre == 'Enter genre' or genre == 'Undetermined' else f' make it with {genre} genre'
     ending_words = '' if len(ending_words) == 0 else f'use one of these words at the end of the line: {ending_words},'
     keywords = '' if len(keywords) == 0 else f' use these keywords words: {keywords},'
     return song_id, line_num, ending_words, keywords, uniqueness, rhyme, add_emotion, emotion, lyrics, \
@@ -117,6 +121,31 @@ def generate():
     else:
         prompt = f"Given the following song, generate one short line between line {line_num} and {line_num + 1}," \
                  f"{rhyme}{emotion}{genre}{ending_words}{keywords}:\n" \
+                 f'"{lyrics}"'
+    print(prompt)
+    completions = openai.Completion.create(
+        engine=model_engine,
+        prompt=prompt,
+        max_tokens=50,
+        n=1,
+        stop=None,
+        temperature=float(uniqueness),
+    )
+    return jsonify(text=completions.choices[0].text.lstrip('"\'.').rstrip('"\'.'))
+
+
+@app.route('/generate_title')
+def generate_title():
+    return 'aaa'
+    song_id, line_num, ending_words, keywords, uniqueness, rhyme, add_emotion, emotion, lyrics, \
+    genre, inspiration, title = get_prompt_parameters()
+    lyrics.pop(line_num)
+    lyrics = '\n'.join(list(map(lambda x: x[0], lyrics)))
+    if len(lyrics) == 0:
+        prompt = f"Generate a short for a song with," \
+                 f"{genre}"
+    else:
+        prompt = f"Generate a short title for the following song:\n" \
                  f'"{lyrics}"'
     print(prompt)
     completions = openai.Completion.create(
@@ -247,4 +276,4 @@ def song(song_name):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
