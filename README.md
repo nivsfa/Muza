@@ -1,4 +1,5 @@
 # Muza
+
 ##Your personal AI assisted song notebook
  
 ### Welcome to the Muza Repository!
