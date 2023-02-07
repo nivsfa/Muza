@@ -1,278 +1,188 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify
-import random
-import sqlite3
+from flask import Flask, render_template, redirect, url_for
+from utils.sql_queries import *
+from utils.prompts import *
 import openai
+import sqlite3
 
-# Set the API key
-openai.api_key = ""
+""""
+    Here you can run the Flask application. 
+    If you want to test our AI model, please add your openai key below.
+
+
+--------------------------------- Put here your openai key ------------------------------------
+"""
+
+openai.api_key = "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"
+
+""""
+-----------------------------------------------------------------------------------------------
+"""
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
-
 model_engine = "text-davinci-003"
-conn = sqlite3.connect('muza_database.sqlite', check_same_thread=False)
-cur = conn.cursor()
 
 
-def get_data():
-    songs_list = cur.execute("SELECT s.title, s.id from song s").fetchall()
-    songs_names = cur.execute("SELECT s.title from song s").fetchall()
-    songs_names = list(map(lambda x: x[0], songs_names))
-    id2name = {k: v for v, k in songs_list}
-    name2id = {k: v for k, v in songs_list}
-    songs_text = cur.execute("SELECT l.song_id, l.line_num, l.line from line l").fetchall()
-    songs = {k: [] for k in songs_names}
-    for line in songs_text:
-        songs[id2name[line[0]]].append((line[1], line[2]))
-    return songs_list, songs_names, id2name, name2id, songs_text, songs
+def get_db_connection():
+    """
+        Creates a connection to an SQLite database file named 'muza_database.sqlite' using the sqlite3 module.
 
-
-songs_list, songs_names, id2name, name2id, songs_text, songs = get_data()
-
-
-def add_song_record(title, genre, inspiration):
-    id = cur.execute("SELECT COUNT(*) from song").fetchall()[0][0]
-    if title in songs_names:
-        title = title + '+'
-    cur.execute("INSERT INTO song (id, title, genre, inspiration) \
-          VALUES (?, ?, ?, ?)", (id, title, genre, inspiration))
-    conn.commit()
-    name2id[title] = id
-    id2name[id] = title
-    songs[title] = []
-
-
-def get_prompt_parameters():
-    song_id = cur.execute("SELECT p.last_song_id from parameters p").fetchall()[0][0]
-    try:
-        line_num = int(request.args.get("line_num"))
-    except:
-        line_num=0
-    ending_words = request.args.get("ending_words")
-    keywords = request.args.get("keywords")
-    uniqueness = request.args.get("uniqueness")
-    rhyme = request.args.get("rhyme")
-    add_emotion = request.args.get("add_emotion")
-    emotion = request.args.get("emotion")
-    lyrics = cur.execute("SELECT l.line from line l where l.song_id=?", str(song_id)).fetchall()
-    genre, inspiration, title = cur.execute("SELECT s.genre, s.inspiration, s.title from song s where s.id=?",
-                                            str(song_id)).fetchall()[0]
-    rhyme = '' if rhyme == 'false' else ' make it rhyme,'
-    emotion = '' if add_emotion == 'false' else f' make it {emotion},'
-    genre = '' if genre == 'Enter genre' or genre == 'Undetermined' else f' make it with {genre} genre'
-    inspiration = '' if genre == 'Enter genre' or genre == 'Undetermined' else f' make it with {genre} genre'
-    ending_words = '' if len(ending_words) == 0 else f'use one of these words at the end of the line: {ending_words},'
-    keywords = '' if len(keywords) == 0 else f' use these keywords words: {keywords},'
-    return song_id, line_num, ending_words, keywords, uniqueness, rhyme, add_emotion, emotion, lyrics, \
-           genre, inspiration, title
-
-
-def add_line_song_record(title, line_num, words_num, max_words_num, uniqueness, rhyme, emotion):
-    id = cur.execute("SELECT s.id from song s WHERE s.title = ?", title)
-    cur.execute("INSERT INTO line (song_id, line_num, words_num, max_words_num, uniqueness, rhyme, emotion) \
-          VALUES (?, ?, ?, ?, ?, ?, ?)", (id, line_num, words_num, max_words_num, uniqueness, rhyme, emotion))
-    conn.commit()
+        Returns:
+            sqlite connection object
+    """
+    conn = sqlite3.connect('muza_database.sqlite')
+    conn.row_factory = sqlite3.Row
+    return conn
 
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
+    """
+        This is the main route of the application.
+        If the request method is POST, it redirects to the add_song route.
+
+        Returns:
+            index.html page
+    """
+    conn = get_db_connection()
+    songs = get_songs_dict(conn)
+    conn.close()
     if request.method == 'POST':
-        return redirect(url_for('add_new_song'))
+        return redirect(url_for('add_song'))
     return render_template('index.html', songs=songs)
 
 
-@app.route('/add_new_song', methods=['GET', 'POST'])
-def add_new_song():
+@app.route('/add_song', methods=['GET', 'POST'])
+def add_song():
+    """
+        This route add new songs to the database.
+
+        If the request method is POST, it handles two possible actions:
+            - If the user clicked on "add_song_button", the 'add_song.html' template is rendered with the song list.
+            - If the user clicked on "submit" button, a new song is uploaded to the database,
+              and the user is redirected to the song route with the newly added song name.
+
+            Returns:
+            add_song.html page
+    """
+    conn = get_db_connection()
+    songs = get_songs_dict(conn)
+    conn.close()
     if request.method == 'POST':
-        print(request.form)
         if "add_song_button" in request.form:
-            return render_template('add_new_song.html', songs=songs)
+            return render_template('add_song.html', songs=songs)
 
-        # Get the song name from the form
-        song_name = request.form['song_name']
-        genre = request.form['genre']
-        inspiration = request.form['inspiration']
-        add_song_record(song_name, genre, inspiration)
-        # Add the new song to the songs dictionary
-        songs[song_name] = ''
-        # Redirect to the new song page using the song name
-        return redirect(url_for('song', song_name=song_name))
+        if "submit" in request.form:
+            song_name = request.form['song_name']
+            conn = get_db_connection()
+            upload_new_song(conn, song_name, request.form['genre'], request.form['inspiration'])
+            songs = get_songs_dict(conn)
+            conn.close()
+            return redirect(url_for('song', song_name=song_name, songs=songs))
 
-    # show the form, it wasn't submitted
-    return render_template('add_new_song.html', songs=songs)
-
-
-@app.route('/generate')
-def generate():
-    song_id, line_num, ending_words, keywords, uniqueness, rhyme, add_emotion, emotion, lyrics, \
-    genre, inspiration, title = get_prompt_parameters()
-    lyrics.pop(line_num)
-    lyrics = '\n'.join(list(map(lambda x: x[0], lyrics)))
-    if len(lyrics) == 0:
-        prompt = f"Generate a short first line in a song," \
-                 f"{rhyme}{emotion}{genre}{ending_words}{keywords}"
-    elif line_num == 0:
-        prompt = f"Given the following song, generate a short first line," \
-                 f"{rhyme}{emotion}{genre}{ending_words}{keywords}\n" \
-                 f'"{lyrics}"'
-    elif len(lyrics) == line_num:
-        prompt = f"Given the following song, generate a one short line at the end of the song," \
-                 f"{rhyme}{emotion}{genre}{ending_words}{keywords}:\n" \
-                 f'"{lyrics}"'
-    else:
-        prompt = f"Given the following song, generate one short line between line {line_num} and {line_num + 1}," \
-                 f"{rhyme}{emotion}{genre}{ending_words}{keywords}:\n" \
-                 f'"{lyrics}"'
-    print(prompt)
-    completions = openai.Completion.create(
-        engine=model_engine,
-        prompt=prompt,
-        max_tokens=50,
-        n=1,
-        stop=None,
-        temperature=float(uniqueness),
-    )
-    return jsonify(text=completions.choices[0].text.lstrip('"\'.').rstrip('"\'.'))
-
-
-@app.route('/generate_title')
-def generate_title():
-    return 'aaa'
-    song_id, line_num, ending_words, keywords, uniqueness, rhyme, add_emotion, emotion, lyrics, \
-    genre, inspiration, title = get_prompt_parameters()
-    lyrics.pop(line_num)
-    lyrics = '\n'.join(list(map(lambda x: x[0], lyrics)))
-    if len(lyrics) == 0:
-        prompt = f"Generate a short for a song with," \
-                 f"{genre}"
-    else:
-        prompt = f"Generate a short title for the following song:\n" \
-                 f'"{lyrics}"'
-    print(prompt)
-    completions = openai.Completion.create(
-        engine=model_engine,
-        prompt=prompt,
-        max_tokens=50,
-        n=1,
-        stop=None,
-        temperature=float(uniqueness),
-    )
-    return jsonify(text=completions.choices[0].text.lstrip('"\'.').rstrip('"\'.'))
-
-
-@app.route('/complete')
-def complete():
-    song_id, line_num, ending_words, keywords, uniqueness, rhyme, add_emotion, emotion, lyrics, \
-    genre, inspiration, title = get_prompt_parameters()
-    ending_words = '' if len(ending_words) == 0 else ', ' + ending_words
-    line = lyrics[line_num][0]
-    lyrics.pop(line_num)
-    lyrics = '\n'.join(list(map(lambda x: x[0], lyrics)))
-    if len(lyrics) == 0:
-        prompt = f"Complete the following line as short first line in a song," \
-                 f"Also,{rhyme}{emotion}{genre}{ending_words}{keywords}:\n" \
-                 f"{line}"
-    elif line_num == 0:
-        prompt = f"Complete the following line as short first line in a song," \
-                 f"Also,{rhyme}{emotion}{genre}{ending_words}{keywords}\n" \
-                 f'"{line}"' + f"And given the following song: \n" + f'"{lyrics}"'
-    elif len(lyrics) == line_num:
-        prompt = f"Complete the following line: \n" \
-                 f'"{line}" \n' \
-                 f"Also,{rhyme}{emotion}{genre}{ending_words}{keywords}:\n" \
-                 f"And given the following song: \n" + f'"{lyrics}"'
-    else:
-        prompt = f"Complete the following line between line {line_num} and {line_num + 1}: \n" \
-                 f'"{line}" \n' \
-                 f"Also,{rhyme}{emotion}{genre}{ending_words}{keywords}:\n" \
-                 f"And given the following song: \n" + f'"{lyrics}"'
-    print(prompt)
-    completions = openai.Completion.create(
-        engine=model_engine,
-        prompt=prompt,
-        max_tokens=50,
-        n=1,
-        stop=None,
-        temperature=float(uniqueness),
-    )
-    return jsonify(text=completions.choices[0].text.lstrip('"\'.').rstrip('"\'.'))
-
-
-@app.route('/rephrase')
-def rephrase():
-    song_id, line_num, ending_words, keywords, uniqueness, rhyme, add_emotion, emotion, lyrics, \
-    genre, inspiration, title = get_prompt_parameters()
-    ending_words = '' if len(ending_words) == 0 else ', ' + ending_words
-    line = lyrics[line_num][0]
-    lyrics.pop(line_num)
-    lyrics = '\n'.join(list(map(lambda x: x[0], lyrics)))
-    if len(lyrics) == 0:
-        prompt = f"Rephrase the following line as short first line in a song," \
-                 f"Also,{rhyme}{emotion}{genre}{ending_words}{keywords}:\n" \
-                 f"{line}"
-    elif line_num == 0:
-        prompt = f"Rephrase the following line as short first line in a song," \
-                 f"Also,{rhyme}{emotion}{genre}{ending_words}{keywords}\n" \
-                 f'"{line}"' + f"And given the following song: \n" + f'"{lyrics}"'
-    elif len(lyrics) == line_num:
-        prompt = f"Rephrase the following line: \n" \
-                 f'"{line}" \n' \
-                 f"Also,{rhyme}{emotion}{genre}{ending_words}{keywords}:\n" \
-                 f"And given the following song: \n" + f'"{lyrics}"'
-    else:
-        prompt = f"Rephrase the following line between line {line_num} and {line_num + 1}: \n" \
-                 f'"{line}" \n' \
-                 f"Also,{rhyme}{emotion}{genre}{ending_words}{keywords}:\n" \
-                 f"And given the following song: \n" + f'"{lyrics}"'
-    print(prompt)
-    completions = openai.Completion.create(
-        engine=model_engine,
-        prompt=prompt,
-        max_tokens=50,
-        n=1,
-        stop=None,
-        temperature=float(uniqueness),
-    )
-    return jsonify(text=completions.choices[0].text.lstrip('"\'.').rstrip('"\'.'))
-
-
-@app.route('/save_row')
-def save_row():
-    line_text = request.args.get("line_text")
-    line_num = int(request.args.get("line_num"))
-    song_id = cur.execute("SELECT p.last_song_id from parameters p").fetchall()[0][0]
-    cur.execute("UPDATE line SET line = ? WHERE song_id = ? AND line_num = ?", (line_text, song_id, line_num))
-    conn.commit()
-    return 'None'
+    return render_template('add_song.html', songs=songs)
 
 
 @app.route('/song/<song_name>', methods=['GET', 'POST'])
 def song(song_name):
-    cur.execute("UPDATE parameters SET last_song_id =? WHERE id = 1", (name2id[song_name],))
-    conn.commit()
-    if request.method == 'GET':
-        return render_template('song.html', song_name=song_name, text=songs[song_name], songs=songs)
+    """
+        This route is for viewing, editing, and saving changes to a song's title and lyrics.
+        The song to display is specified by the `song_name` parameter in the URL path.
 
+        If the request method is POST, the following actions can be performed based on the form data:
+        - Adding a new song (by clicking the 'add_song_button') will redirect to the 'add_song' route
+        - Saving changes to the song title (by clicking the 'save_title' button) will update the title
+          in the database and redisplay the song page with the updated title
+        - Saving changes to a line of lyrics (by clicking the 'save_line' button) will update the line
+          in the database and redisplay the song page with the updated lyrics
+
+        Parameters:
+            song_name (str): The name of the selected song
+
+        Returns:
+            song.html page
+    """
+    conn = get_db_connection()
+    songs = get_songs_dict(conn)
+    update_parameters_table(conn, song_name)
+    conn.close()
     if request.method == 'POST':
         if "add_song_button" in request.form:
-            return redirect(url_for('add_new_song'))
-        # if request.form.get("generate"):
-        #     generated_text = 'generated text'  # function that returns the generated text
-        #     return render_template('song.html', generated_text=generated_text,
-        #                            song_name=song_name, text=songs[song_name], songs=songs)
-        if 'save' in request.form:
-            # Read the text from the textarea
-            text = request.form['text']
-            # Save the changes made to the song
-            songs[song_name] = text
-            # Redisplay the song page with the updated text
+            return render_template('add_song.html', songs=songs)
+        if "save_title" in request.form:
+            conn = get_db_connection()
+            new_title = request.form['new_title']
+            update_title(conn, new_title)
+            songs = get_songs_dict(conn)
+            conn.close()
+            song_name = new_title
+            return render_template('song.html', song_name=song_name, text=songs[new_title], songs=songs)
+        if any(['save_line' in key for key in request.form.keys()]):
+            for key in request.form.keys():
+                if 'save_line' in key:
+                    line_num = key.split('-')[-1]
+            conn = get_db_connection()
+            line = request.form['text-'+line_num]
+            update_line(conn, line, line_num)
+            songs = get_songs_dict(conn)
+            conn.close()
             return render_template('song.html', song_name=song_name, text=songs[song_name], songs=songs)
-        elif 'add_song' in request.form:
-            # Add a new song and redirect to the new song page
-            new_song_name = request.form['song_name']
-            songs[new_song_name] = ''
-            return redirect(url_for('song', song_name=new_song_name))
-
     return render_template('song.html', song_name=song_name, text=songs[song_name], songs=songs)
+
+
+@app.route('/generate_title')
+def generate_title():
+    """
+        Generates a new title given the current song
+
+        Returns:
+            The generated title by gpt3
+    """
+    conn = get_db_connection()
+    s = get_ai_sentence(conn=conn, prompt_func=generate_title_prompt, model_engine=model_engine, openai=openai)
+    conn.close()
+    return s
+
+
+@app.route('/generate')
+def generate():
+    """
+        Generates a new line given the current song
+
+        Returns:
+            The generated sentence by gpt3
+    """
+    conn = get_db_connection()
+    s = get_ai_sentence(conn=conn, prompt_func=generate_line_prompt, model_engine=model_engine, openai=openai)
+    conn.close()
+    return s
+
+
+@app.route('/complete')
+def complete():
+    """
+        Completes a line given the current line & song
+
+        Returns:
+            The generated sentence by gpt3
+    """
+    conn = get_db_connection()
+    s = get_ai_sentence(conn=conn, prompt_func=complete_line_prompt, model_engine=model_engine, openai=openai)
+    conn.close()
+    return s
+
+
+@app.route('/rephrase')
+def rephrase():
+    """
+        Rephrases a line given the current line & song
+
+        Returns:
+            The generated sentence by gpt3
+    """
+    conn = get_db_connection()
+    s = get_ai_sentence(conn=conn, prompt_func=rephrase_line_prompt, model_engine=model_engine, openai=openai)
+    conn.close()
+    return s
 
 
 if __name__ == '__main__':

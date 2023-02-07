@@ -1,0 +1,139 @@
+.home-form {
+    padding: 30px;
+}
+
+#main_button {
+    color: white;
+    margin-top: 100px;
+}
+
+body {
+    background: linear-gradient(to right, #517DF0 50%, white 50%);
+    height: 100%;
+    font-size: 14px;
+}
+
+.v1_7 {
+    width: 72px;
+    color: rgba(0, 0, 0, 1);
+    position: absolute;
+    top: 75px;
+    left: 105px;
+    font-family: Inter, serif;
+    font-weight: Bold;
+    font-size: 14px;
+    opacity: 1;
+    text-align: center;
+}
+
+.save-button {
+    margin-right: 10px; /* Margin between buttons */
+    background-color: #4CAF50; /* Green background */
+    color: white; /* White text */
+    padding: 12px 20px; /* Padding for the buttons */
+    border: none; /* No border */
+    cursor: pointer; /* Pointer cursor */
+    width: 10%; /* Width of the button */
+    opacity: 0.9; /* Opacity of the button */
+}
+
+.v1_20 {
+    width: 212px;
+    height: 600px;
+    background: #517DF0;
+    opacity: 1;
+    position: absolute;
+    top: 129px;
+    left: 78px;
+    overflow: hidden;
+}
+
+.v1_25 {
+    width: 212px;
+    height: 600px;
+    background: white;
+    opacity: 1;
+    position: absolute;
+    top: 129px;
+    right: 78px;
+    border: 1px solid rgba(255, 255, 255, 1);
+    padding: 15px;
+    overflow: hidden;
+}
+
+.v1_21 {
+    width: 915px;
+    height: 600px;
+    background: #DAEAFE;
+    opacity: 1;
+    position: absolute;
+    top: 129px;
+    left: 310px;
+    border: 1px solid rgba(255, 255, 255, 1);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.v1_22 {
+    width: 50%;
+    color: white;
+    position: absolute;
+    top: 31px;
+    left: 18%;
+    font-family: ABeeZee, serif;
+    font-size: 80px;
+    opacity: 1;
+    text-align: center;
+}
+
+.v1_23 {
+    width: 50%;
+    color: #517DF0;
+    position: absolute;
+    top: 71px;
+    left: 51%;
+    font-family: Inter, serif;
+    font-size: 20px;
+    opacity: 1;
+    text-align: left;
+}
+
+.v1_24 {
+    width: 200px;
+    color: white;
+    position: absolute;
+    top: 143px;
+    left: 50px;
+    font-family: ABeeZee, serif;
+    font-weight: Bold;
+    font-size: 16px;
+    opacity: 1;
+    text-align: left;
+    padding: 5px;
+}
+
+a:link, a:visited {
+    color: white;
+}
+
+.name {
+    color: #fff;
+}
+
+.name {
+    color: #fff;
+}
+
+.name {
+    color: #fff;
+}
+
+.name {
+    color: #fff;
+}
+
+.name {
+    color: #fff;
+}

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/add_song.css') }}">
+<link href="https://fonts.googleapis.com/css?family=ABeeZee&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<div class="v1_19">
+
+    <form class="home-form" method="post">
+        <input hidden name="clicked" value="checked">
+        <a id="main_button" name="main_button" href="{{ url_for('index') }}" type="submit">Home Page</a>
+    </form>
+
+    <span class="v1_7">
+        <form id="add_song_form" method="post">
+            <input hidden name="clicked" value="checked">
+            <button name="add_song_button" href="{{ url_for('add_song') }}" type="submit"
+                    style="background-color:#4CAF50;" class="btn btn-primary btn-lg">Add New Song</button>
+        </form>
+    </span>
+
+    <div class="v1_20"></div>
+    <div class="v1_25"></div>
+    <div class="v1_21">
+        <form method="POST">
+            <div class="form-group">
+                <label for="song_name">Song Title</label>
+                <input type="text" class="form-control" name="song_name" id="song_name" value="Undetermined"
+                       style="margin: 0 auto; display: flex; justify-content: center;"><br>
+                <label for="genre">Genre</label>
+                <select class="form-control" name="genre" id="genre" aria-label="Default select example">
+                    <option value="Undetermined" disabled selected>Enter genre</option>
+                    <option value="1">Rock</option>
+                    <option value="2">Pop</option>
+                    <option value="3">Rap</option>
+                    <option value="4">Hip Hop</option>
+                    <option value="5">Reggae</option>
+                    <option value="6">Country</option>
+                    <option value="6">Funk</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="inspiration">Inspiration</label>
+                <input type="text" class="form-control" name="inspiration" id="inspiration"
+                       aria-describedby="inspirationHelp" value="Undetermined"
+                       style="margin: 0 auto; display: flex; justify-content: center;">
+                <small id="inspirationHelp" class="form-text text-muted">
+                    Enter an artist or a band you want to be inspired by.</small>
+            </div>
+            <button href="{{ url_for('song', song_name=song_name) }}" name="submit" type="submit" class="btn btn-primary">Submit
+            </button>
+        </form>
+    </div>
+
+    <span class="v1_22">Muza</span>
+    <span class="v1_23">Your personal AI assisted song notebook</span>
+    <span class="v1_24">
+        My Songs:
+        <ul>
+            {% for song_name in songs %}
+                <li><a href="{{ url_for('song', song_name=song_name) }}">{{ song_name }}</a></li>
+            {% endfor %}
+        </ul>
+    </span>
+
+    <div class="name"></div>
+    <div class="name"></div>
+    <div class="name"></div>
+    <div class="name"></div>
+    <div class="name"></div>
+</div>
+</body>
+</html>
