@@ -12,7 +12,7 @@ import sqlite3
 --------------------------------- Put here your openai key ------------------------------------
 """
 
-openai.api_key = "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"
+openai.api_key = ""
 
 """"
 -----------------------------------------------------------------------------------------------
